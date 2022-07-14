@@ -1,0 +1,1 @@
+export { validarCampos } from './validar-campos';
