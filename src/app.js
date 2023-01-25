@@ -21,5 +21,6 @@ app.use('/api/clients', routes.clientRoute)
 app.use('/api/bajaj', routes.bajajRoute)
 app.use('/api/ford', routes.fordRoute)
 app.use('/api/peugeot', routes.peugeotRoute)
+app.use('/api/foton', routes.fotonRoute)
 
 export default app;
