@@ -1,14 +1,14 @@
 import { getConection } from "../databases/conection";
 
 /* Method that search in all databases(Sales & Services) the client by plate. */
-export const getFordInv = async (req, res) => {
+export const getPeugeotInv = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
 
   try {
     /* A query to the Service database. */
 
-    const ford = await pool.request().query(`select
+    const peugeot = await pool.request().query(`select
     DISTINCT I1.Marca,
     I1.Version_DescipcionModelo,
     I1.Ano_Modelo,
@@ -49,10 +49,10 @@ Carrousel2: "https://automarcol.com/fordcarrousel2.jpg"
     '' AS Version,
     UPPER(I1.status) AS Status
 from
-    INVNUE01_2021_2 AS I1`);
+    INVNUE01_2021_PEUGEOT AS I1`);
 
-    if (!!ford) {
-      return res.status(200).json(ford.recordset);
+    if (!!peugeot) {
+      return res.status(200).json(peugeot.recordset);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });

@@ -32,7 +32,7 @@ WHERE
         return res.status(200).json(bajaj.recordset);
     }
     /*  if everything else fails, return a 404 error. */
-    return res.status(404).json({ message: "Placa de vehiculo no encontrada" });
+    return res.status(404).json({ message: "operation failed" });
   } catch (error) {
     res.status(500).json(error);
   }
