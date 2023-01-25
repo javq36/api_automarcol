@@ -43,6 +43,7 @@ export const getClientCarInfo = async (req, res) => {
   /* let principal = ['FORD', 'PEUGEOT', 'GRAND CHEROKEE', 'DODGE', 'FIAT', 'JEEP', 'RAM' ]; */
   let segundaSede = ["FOTON", "BAJAJ"];
   let sedeTaller = "";
+  let test = "";
 
   try {
     /* A query to the Service database. */
