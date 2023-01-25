@@ -18,5 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 
 //routes
 app.use('/api/clients', routes.clientRoute)
+app.use('/api/bajaj', routes.bajajRoute)
 
 export default app;
