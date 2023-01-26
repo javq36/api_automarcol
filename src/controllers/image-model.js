@@ -15,30 +15,32 @@ export const updateImgModel = async (req, res) => {
     cojineria,
     puertas,
     combustible,
-    otro
+    otro,
   } = req.body;
 
   try {
     /* A query to the Service database. */
-
+    console.log('server')
     const model = await pool
       .request()
       .query(`select * from img_modelo where modelo = '${modelo}'`);
 
-    if (!!model) {
-      request = await pool
+    if (!!model?.recordset?.length !== 0 && !!model.recordset[0].model) {
+      console.log("update", model.recordset)
+      const request = await pool
         .request()
         .query(
-          `update img_modelo set presentation_img = '${presentation_img}', carrousel_img = '${carrousel_img}', collage_img = '${collage_img}', usuario = '${usuario}', cilindraje = '${cilindraje}', traccion = '${traccion}', cojineria = '${cojineria}', puertas = '${puertas}', combustible = '${combustible}', otro = ${otro} where modelo = '${modelo}'`
+          `update img_modelo set presentation_img = '${presentation_img}', carrousel_img = '${carrousel_img}', collage_img = '${collage_img}', usuario = '${usuario}', cilindraje = '${cilindraje}', traccion = '${traccion}', cojineria = '${cojineria}', puertas = '${puertas}', combustible = '${combustible}', otro = '${otro}' where modelo = '${modelo}'`
         );
       return res.status(200).json(request.recordset);
     } else {
-      let request;
-      request = await pool
+      console.log("insert");
+      const request = await pool
         .request()
         .query(
-          `insert into img_modelo (modelo, presentation_img, carrousel_img, collage_img, usuario, cilindraje, traccion, cojineria, puertas, combustible, otro) values ('${modelo}', '${presentation_img}', '${carrousel_img}', '${collage_img}', '${usuario}', '${cilindraje}', '${traccion}', '${cojineria}', '${puertas}', '${combustible}', ${otro})`
+          `insert into img_modelo (modelo, presentation_img, carrousel_img, collage_img, usuario, cilindraje, traccion, cojineria, puertas, combustible, otro) values ('${modelo}', '${presentation_img}', '${carrousel_img}', '${collage_img}', '${usuario}', '${cilindraje}', '${traccion}', '${cojineria}', '${puertas}', '${combustible}', '${otro}' )`
         );
+        console.log(request.recordset)
       return res.status(202).json(request.recordset);
     }
   } catch (error) {
