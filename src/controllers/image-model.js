@@ -24,9 +24,7 @@ export const updateImgModel = async (req, res) => {
       .request()
       .query(`select * from img_modelo where modelo = '${modelo}'`);
 
-    console.log('model', model.recordset)
-
-    if (!!model && !!model.recordset?.modelo) {
+    if (!!model && !!model.recordset[0]) {
       const request = await pool
         .request()
         .query(
