@@ -12,44 +12,19 @@ export const getFcaInv = async (req, res) => {
     DISTINCT I1.Marca,
     I1.Version_DescipcionModelo,
     I1.Ano_Modelo,
-    STUFF(
-        (
-            select
-                ', ' + upper(I3.descripcion)
-            from
-                vh_colores as I3
-                INNER JOIN INVNUE01_2021_2 as I2 on I2.CodigoColor = I3.color
-            WHERE
-                I2.Version_DescipcionModelo = I1.Version_DescipcionModelo FOR XML PATH('')
-        ),
-        1,
-        2,
-        ''
-    ) AS Colores,
-    I1.Costocompra,
+    VT.CostoTotal,
     I1.Clase,
-    '{
-Presentacion1: "https://automarcol.com/fordcarrousel2.jpg",
-Presentacion2: "https://automarcol.com/fordcarrousel2.jpg"
-}' AS PresentationIMG,
-    '{
-Carrousel1: "https://automarcol.com/fordcarrousel2.jpg",
-Carrousel2: "https://automarcol.com/fordcarrousel2.jpg"
-}' AS CarrouselIMG,
-    '{
-"img1": "https://www.ford.com.co/content/ford/co/es_co/home/performance/raptor/jcr:content/par/brandgallery/image1/image.imgs.full.high.jpg/1635456003638.jpg"
-"img2": "https://autonal.com/wp-content/uploads/2022/01/banner-web-nuevos-ford-generico-2-desktop.jpg"
-}' AS CollageIMG,
-    '' AS Traccion,
-    '' AS Cilindraje,
+    IMG.presentation_img AS PresentationIMG,
+    IMG.traccion AS Traccion,
+    IMG.cilindraje AS Cilindraje,
     '' AS Combustible,
-    '' AS Linea,
-    '' AS Puertas,
-    '' AS Pasajeros,
-    '' AS Version,
+    IMG.Puertas AS Puertas,
+    IMG.cojineria AS Cojineria,
     UPPER(I1.status) AS Status
 from
-    INVNUE01_2021_FCA AS I1`);
+    INVNUE01_2021_FCA AS I1
+    INNER JOIN INVNUE01_2021_FCA as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
+    INNER JOIN img_modelo as img on img.modelo = I1.Version_DescipcionModelo`);
 
     if (!!fca) {
       return res.status(200).json(fca.recordset);
