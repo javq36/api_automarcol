@@ -25,21 +25,20 @@ export const updateImgModel = async (req, res) => {
       .query(`select * from img_modelo where modelo = '${modelo}'`);
 
     if (!!model) {
+      request = await pool
+        .request()
+        .query(
+          `update img_modelo set presentation_img = '${presentation_img}', carrousel_img = '${carrousel_img}', collage_img = '${collage_img}', usuario = '${usuario}', cilindraje = '${cilindraje}', traccion = '${traccion}', cojineria = '${cojineria}', puertas = '${puertas}', combustible = '${combustible}' where modelo = '${modelo}'`
+        );
+      return res.status(200).json(request.recordset);
+    } else {
       let request;
       request = await pool
         .request()
         .query(
           `insert into img_modelo (modelo, presentation_img, carrousel_img, collage_img, usuario, cilindraje, traccion, cojineria, puertas, combustible) values ('${modelo}', '${presentation_img}', '${carrousel_img}', '${collage_img}', '${usuario}', '${cilindraje}', '${traccion}', '${cojineria}', '${puertas}', '${combustible}')`
         );
-
-      return res.status(200).json(request.recordset);
-    } else {
-      request = await pool
-        .request()
-        .query(
-          `update img_modelo set presentation_img = '${presentation_img}', carrousel_img = '${carrousel_img}', collage_img = '${collage_img}', usuario = '${usuario}', cilindraje = '${cilindraje}', traccion = '${traccion}', cojineria = '${cojineria}', puertas = '${puertas}', combustible = '${combustible}' where modelo = '${modelo}'`
-        );
-        return res.status(202).json(request.recordset);
+      return res.status(202).json(request.recordset);
     }
   } catch (error) {
     res.status(500).json(error);
