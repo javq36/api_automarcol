@@ -15,6 +15,7 @@ export const updateImgModel = async (req, res) => {
     cojineria,
     puertas,
     combustible,
+    otro
   } = req.body;
 
   try {
@@ -28,7 +29,7 @@ export const updateImgModel = async (req, res) => {
       request = await pool
         .request()
         .query(
-          `update img_modelo set presentation_img = '${presentation_img}', carrousel_img = '${carrousel_img}', collage_img = '${collage_img}', usuario = '${usuario}', cilindraje = '${cilindraje}', traccion = '${traccion}', cojineria = '${cojineria}', puertas = '${puertas}', combustible = '${combustible}' where modelo = '${modelo}'`
+          `update img_modelo set presentation_img = '${presentation_img}', carrousel_img = '${carrousel_img}', collage_img = '${collage_img}', usuario = '${usuario}', cilindraje = '${cilindraje}', traccion = '${traccion}', cojineria = '${cojineria}', puertas = '${puertas}', combustible = '${combustible}', otro = ${otro} where modelo = '${modelo}'`
         );
       return res.status(200).json(request.recordset);
     } else {
@@ -36,7 +37,7 @@ export const updateImgModel = async (req, res) => {
       request = await pool
         .request()
         .query(
-          `insert into img_modelo (modelo, presentation_img, carrousel_img, collage_img, usuario, cilindraje, traccion, cojineria, puertas, combustible) values ('${modelo}', '${presentation_img}', '${carrousel_img}', '${collage_img}', '${usuario}', '${cilindraje}', '${traccion}', '${cojineria}', '${puertas}', '${combustible}')`
+          `insert into img_modelo (modelo, presentation_img, carrousel_img, collage_img, usuario, cilindraje, traccion, cojineria, puertas, combustible, otro) values ('${modelo}', '${presentation_img}', '${carrousel_img}', '${collage_img}', '${usuario}', '${cilindraje}', '${traccion}', '${cojineria}', '${puertas}', '${combustible}', ${otro})`
         );
       return res.status(202).json(request.recordset);
     }
