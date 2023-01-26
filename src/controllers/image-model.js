@@ -20,13 +20,13 @@ export const updateImgModel = async (req, res) => {
 
   try {
     /* A query to the Service database. */
-    console.log('server')
     const model = await pool
       .request()
       .query(`select * from img_modelo where modelo = '${modelo}'`);
 
-    if (!!model?.recordset?.length !== 0 && !!model.recordset[0].model) {
-      console.log("update", model.recordset)
+    console.log('model', model.recordset)
+
+    if (!!model && !!model.recordset?.modelo) {
       const request = await pool
         .request()
         .query(
@@ -34,7 +34,6 @@ export const updateImgModel = async (req, res) => {
         );
       return res.status(200).json(request.recordset);
     } else {
-      console.log("insert");
       const request = await pool
         .request()
         .query(
