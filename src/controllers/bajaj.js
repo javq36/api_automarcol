@@ -9,24 +9,22 @@ export const getBajajInv = async (req, res) => {
     /* A query to the Service database. */
 
     const bajaj = await pool.request().query(`select
-    DISTINCT I1.Version_DescipcionModelo,
-    I1.Marca,
+    DISTINCT I1.Marca,
+    I1.Version_DescipcionModelo,
     I1.Ano_Modelo,
-    I1.Costocompra,
+    VT.CostoTotal,
     I1.Clase,
-    '{
-Presentacion1: "https://automarcol.com/fordcarrousel2.jpg",
-Presentacion2: "https://automarcol.com/fordcarrousel2.jpg"
-}' AS PresentationIMG,
-    '' AS Traccion,
-    '' AS Cilindraje,
+    IMG.presentation_img AS PresentationIMG,
+    IMG.traccion AS Traccion,
+    IMG.cilindraje AS Cilindraje,
     '' AS Combustible,
-    '' AS Puertas,
+    IMG.Puertas AS Puertas,
+    IMG.cojineria AS Cojineria,
     UPPER(I1.status) AS Status
 from
     INVNUE01_2021_BAJAJ AS I1
-WHERE
-    I1.status = 'disponible'`);
+    INNER JOIN INVNUE01_2021_BAJAJ as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
+    INNER JOIN img_modelo as img on img.modelo = I1.Version_DescipcionModelo`);
 
     if(!!bajaj){
         return res.status(200).json(bajaj.recordset);
