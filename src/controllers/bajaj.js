@@ -15,11 +15,14 @@ export const getBajajInv = async (req, res) => {
     VT.CostoTotal,
     I1.Clase,
     IMG.presentation_img AS PresentationIMG,
+    IMG.carrousel_img AS CarrouselIMG,
+    IMG.collage_img AS CollageIMG,
     IMG.traccion AS Traccion,
     IMG.cilindraje AS Cilindraje,
     '' AS Combustible,
     IMG.Puertas AS Puertas,
     IMG.cojineria AS Cojineria,
+    IMG.otro AS Otro,
     UPPER(I1.status) AS Status
 from
     INVNUE01_2021_BAJAJ AS I1
