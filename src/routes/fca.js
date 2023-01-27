@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { getFcaInv } from "../controllers";
+import { getFcaInv, getFcaRep } from "../controllers";
 
 export const fcaRoute = Router();
 
 fcaRoute.get("/inv", getFcaInv);
 
-
+fcaRoute.get("/rep", getFcaRep);
 /* router.post('/clientsById', getClientsById); */
 

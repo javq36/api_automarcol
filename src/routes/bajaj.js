@@ -1,12 +1,10 @@
 import { Router } from "express";
-import { validarCampos } from "../middlewares";
-import { check } from "express-validator";
-import { getBajajInv } from "../controllers/bajaj";
+import { getBajajInv, getBajajrep } from "../controllers/bajaj";
 
 export const bajajRoute = Router();
 
 bajajRoute.get("/inv", getBajajInv);
 
-
+bajajRoute.get("/rep", getBajajrep);
 /* router.post('/clientsById', getClientsById); */
 
