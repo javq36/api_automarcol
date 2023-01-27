@@ -8,8 +8,7 @@ export const getBajajInv = async (req, res) => {
   try {
     /* A query to the Service database. */
 
-    const bajaj = await pool.request().query(`select
-    DISTINCT I1.Marca,
+    const bajaj = await pool.request().query(`select DISTINCT I1.Marca,
     I1.Version_DescipcionModelo,
     I1.Ano_Modelo,
     VT.CostoTotal,
@@ -26,7 +25,7 @@ export const getBajajInv = async (req, res) => {
     UPPER(I1.status) AS Status
 from
     INVNUE01_2021_BAJAJ AS I1
-    INNER JOIN INVNUE01_2021_BAJAJ as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
+    INNER JOIN VTANUE01_2021_BAJAJ as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
     INNER JOIN img_modelo as img on img.modelo = I1.Version_DescipcionModelo`);
 
     if(!!bajaj){
