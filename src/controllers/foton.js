@@ -26,7 +26,7 @@ export const getFotonInv = async (req, res) => {
     UPPER(I1.status) AS Status
 from
     INVNUE01_2021_FOTON AS I1
-    INNER JOIN INVNUE01_2021_FOTON as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
+    INNER VTANUE_FOTON_HISTORICO as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
     INNER JOIN img_modelo as img on img.modelo = I1.Version_DescipcionModelo`);
 
     if (!!foton) {
