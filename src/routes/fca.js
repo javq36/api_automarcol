@@ -6,5 +6,3 @@ export const fcaRoute = Router();
 fcaRoute.get("/inv", getFcaInv);
 
 fcaRoute.get("/rep", getFcaRep);
-/* router.post('/clientsById', getClientsById); */
-
