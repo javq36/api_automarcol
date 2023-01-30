@@ -7,5 +7,3 @@ fordRoute.get("/inv", getFordInv);
 
 fordRoute.get("/rep", getFordrep);
 
-/* router.post('/clientsById', getClientsById); */
-
