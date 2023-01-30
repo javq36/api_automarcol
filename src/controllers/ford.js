@@ -19,15 +19,15 @@ export const getFordInv = async (req, res) => {
     IMG.collage_img AS CollageIMG,
     IMG.traccion AS Traccion,
     IMG.cilindraje AS Cilindraje,
-    '' AS Combustible,
+    IMG.combustible AS Combustible,
     IMG.Puertas AS Puertas,
     IMG.cojineria AS Cojineria,
     IMG.otro AS Otro,
     UPPER(I1.status) AS Status
 from
     INVNUE01_2021_2 AS I1
-    INNER JOIN VTANUE01_2021_2 as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
-    INNER JOIN img_modelo as img on img.modelo = I1.Version_DescipcionModelo`);
+    LEFT JOIN VTANUE01_2021_2 as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
+    LEFT JOIN img_modelo as img on img.modelo = I1.Version_DescipcionModelo`);
 
     if (!!ford) {
       return res.status(200).json(ford.recordset);
