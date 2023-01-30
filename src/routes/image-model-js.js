@@ -5,6 +5,3 @@ export const imageRoute = Router();
 
 imageRoute.put("/vehicles/model", updateImgModel);
 
-
-/* router.post('/clientsById', getClientsById); */
-
