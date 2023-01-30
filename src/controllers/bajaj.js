@@ -12,25 +12,25 @@ export const getBajajInv = async (req, res) => {
     DISTINCT I1.Marca,
     I1.Version_DescipcionModelo,
     I1.Ano_Modelo,
-    VT.CostoTotal,
+    VT.costoactual,
     I1.Clase,
     IMG.presentation_img AS PresentationIMG,
     IMG.carrousel_img AS CarrouselIMG,
     IMG.collage_img AS CollageIMG,
     IMG.traccion AS Traccion,
     IMG.cilindraje AS Cilindraje,
-    '' AS Combustible,
+    IMG.combustible AS Combustible,
     IMG.Puertas AS Puertas,
     IMG.cojineria AS Cojineria,
     IMG.otro AS Otro,
     UPPER(I1.status) AS Status
 from
     INVNUE01_2021_BAJAJ AS I1
-    INNER JOIN INVNUE01_2021_BAJAJ as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
-    INNER JOIN img_modelo as img on img.modelo = I1.Version_DescipcionModelo`);
+    LEFT JOIN INVNUE01_2021_BAJAJ as vt on vt.Version_DescipcionModelo = I1.Version_DescipcionModelo
+    LEFT JOIN img_modelo as img on img.modelo = I1.Version_DescipcionModelo`);
 
-    if(!!bajaj){
-        return res.status(200).json(bajaj.recordset);
+    if (!!bajaj) {
+      return res.status(200).json(bajaj.recordset);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });
@@ -38,7 +38,6 @@ from
     res.status(500).json(error);
   }
 };
-
 
 export const getBajajrep = async (req, res) => {
   /* Getting the connection to the database. */
@@ -60,8 +59,8 @@ export const getBajajrep = async (req, res) => {
     FROM REFINV01_2021_BAJAJ AS I1 -- cambiar la tabla por marca
     LEFT JOIN img_modelo AS img ON img.modelo = I1.NumeroParte`);
 
-    if(!!bajaj){
-        return res.status(200).json(bajaj.recordset);
+    if (!!bajaj) {
+      return res.status(200).json(bajaj.recordset);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });
