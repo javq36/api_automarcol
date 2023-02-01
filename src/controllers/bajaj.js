@@ -30,7 +30,15 @@ from
     LEFT JOIN img_modelo as img on img.modelo = I1.Version_DescipcionModelo`);
 
     if (!!bajaj) {
-      return res.status(200).json(bajaj.recordset);
+      const filteredCars = bajaj.recordset.reduce((uniqueCars, car) => {
+        const version = car.Version_DescipcionModelo.trim().toUpperCase();
+        if (car.costoactual >= 0 && !uniqueCars.some(uniqueCar => uniqueCar.Version_DescipcionModelo.trim().toUpperCase() === version)) {
+            car.Version_DescipcionModelo = version;
+            uniqueCars.push(car);
+        }
+        return uniqueCars;
+    }, []);
+      return res.status(200).json(filteredCars);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });
