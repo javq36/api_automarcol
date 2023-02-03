@@ -1,4 +1,5 @@
 import { getConection } from "../databases/conection";
+import { paginateAll } from "../helpers/functions";
 
 /* Method that search in all databases(Sales & Services) the client by plate. */
 export const getPeugeotInv = async (req, res) => {
@@ -12,7 +13,13 @@ export const getPeugeotInv = async (req, res) => {
     DISTINCT I1.Marca,
     I1.Version_DescipcionModelo,
     I1.Ano_Modelo,
-    VT.CostoTotal,
+    (
+      (CONVERT(numeric(10, 0), I1.costocompra)) + (
+          (
+              (CONVERT(numeric(10, 0), I1.costocompra) * 0.16) +((CONVERT(numeric(10, 0), I1.costocompra)) * 0.19)
+          )
+      )
+  ) as CostoTotal,
     I1.Clase,
     IMG.presentation_img AS PresentationIMG,
     IMG.carrousel_img AS CarrouselIMG,
@@ -68,7 +75,8 @@ export const getPeugeotRep = async (req, res) => {
     LEFT JOIN img_modelo AS img ON img.modelo = I1.NumeroParte`);
 
     if (!!peugeot) {
-      return res.status(200).json(peugeot.recordset);
+      let result = paginateAll(peugeot.recordset, 20)
+      return res.status(200).json(result);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });

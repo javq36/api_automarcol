@@ -6,5 +6,4 @@ export const bajajRoute = Router();
 bajajRoute.get("/inv", getBajajInv);
 
 bajajRoute.get("/rep", getBajajrep);
-/* router.post('/clientsById', getClientsById); */
 

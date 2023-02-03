@@ -1,4 +1,5 @@
 import { getConection } from "../databases/conection";
+import { paginateAll } from "../helpers/functions";
 
 /* Method that search in all databases(Sales & Services) the client by plate. */
 export const getBajajInv = async (req, res) => {
@@ -12,7 +13,13 @@ export const getBajajInv = async (req, res) => {
     DISTINCT I1.Marca,
     I1.Version_DescipcionModelo,
     I1.Ano_Modelo,
-    VT.costoactual,
+    (
+      (CONVERT(numeric(10, 0), I1.costocompra)) + (
+          (
+              (CONVERT(numeric(10, 0), I1.costocompra) * 0.16) +((CONVERT(numeric(10, 0), I1.costocompra)) * 0.19)
+          )
+      )
+  ) as CostoTotal,
     I1.Clase,
     IMG.presentation_img AS PresentationIMG,
     IMG.carrousel_img AS CarrouselIMG,
@@ -32,7 +39,7 @@ from
     if (!!bajaj) {
       const filteredCars = bajaj.recordset.reduce((uniqueCars, car) => {
         const version = car.Version_DescipcionModelo.trim().toUpperCase();
-        if (car.costoactual >= 0 && !uniqueCars.some(uniqueCar => uniqueCar.Version_DescipcionModelo.trim().toUpperCase() === version)) {
+        if (car.CostoTotal >= 0 && !uniqueCars.some(uniqueCar => uniqueCar.Version_DescipcionModelo.trim().toUpperCase() === version)) {
             car.Version_DescipcionModelo = version;
             uniqueCars.push(car);
         }
@@ -59,7 +66,7 @@ export const getBajajrep = async (req, res) => {
     I1.NumeroParte AS Parte,
     I1.descripcion AS Descripcion,
     I1.existencia,
-    I1.Costo,
+    I1.Costo AS Costo$,
     img.otro AS otro,
     img.presentation_img AS presentation_img,
     img.carrousel_img AS carrousel_img,
@@ -68,7 +75,8 @@ export const getBajajrep = async (req, res) => {
     LEFT JOIN img_modelo AS img ON img.modelo = I1.NumeroParte`);
 
     if (!!bajaj) {
-      return res.status(200).json(bajaj.recordset);
+      let result = paginateAll(bajaj.recordset, 20)
+      return res.status(200).json(result);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });
