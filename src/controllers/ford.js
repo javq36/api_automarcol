@@ -1,5 +1,5 @@
 import { getConection } from "../databases/conection";
-import { paginateAll } from "../helpers/functions";
+import { formatCOP, paginateAll } from "../helpers/functions";
 
 /* Method that search in all databases(Sales & Services) the client by plate. */
 export const getFordInv = async (req, res) => {
@@ -39,13 +39,26 @@ from
     if (!!ford) {
       const filteredCars = ford.recordset.reduce((uniqueCars, car) => {
         const version = car.Version_DescipcionModelo.trim().toUpperCase();
-        if (car.CostoTotal >= 0 && !uniqueCars.some(uniqueCar => uniqueCar.Version_DescipcionModelo.trim().toUpperCase() === version)) {
-            car.Version_DescipcionModelo = version;
-            uniqueCars.push(car);
+        if (
+          car.CostoTotal >= 0 &&
+          !uniqueCars.some(
+            (uniqueCar) =>
+              uniqueCar.Version_DescipcionModelo.trim().toUpperCase() ===
+              version
+          )
+        ) {
+          car.Version_DescipcionModelo = version;
+          uniqueCars.push(car);
         }
         return uniqueCars;
-    }, []);
-      return res.status(200).json(ford.recordset);
+      }, []);
+      const pricedCars = filteredCars.map((car) => {
+        return {
+          ...car,
+          CostoTotal: formatCOP(parseInt(car.CostoTotal)),
+        };
+      });
+      return res.status(200).json(pricedCars);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });
@@ -53,7 +66,6 @@ from
     res.status(500).json(error);
   }
 };
-
 
 export const getFordrep = async (req, res) => {
   /* Getting the connection to the database. */
@@ -76,7 +88,14 @@ export const getFordrep = async (req, res) => {
     LEFT JOIN img_modelo AS img ON img.modelo = I1.NumeroParte`);
 
     if (!!ford) {
-      let result = paginateAll(ford.recordset, 20)
+      const pricedReps = ford.recordset.map((rep) => {
+        return {
+          ...rep,
+          Costo$: formatCOP(parseInt(rep.Costo$)),
+        };
+      });
+
+      let result = paginateAll(pricedReps, 20);
       return res.status(200).json(result);
     }
     /*  if everything else fails, return a 404 error. */
