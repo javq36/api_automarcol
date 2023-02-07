@@ -261,7 +261,6 @@ export const getFordVta = async (req, res) => {
       .slice(0, 10)} 00:00:00.000' AND '${finalDate
       .toISOString()
       .slice(0, 10)} 23:59:59.999')
-    --AND (h.fecha >= DATEADD(day, - 32, GETDATE()))
     AND (h.ventatotal > 0)`);
 
     if (!!ford) {
