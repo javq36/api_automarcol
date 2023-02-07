@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getFotonInv, getFotonRep } from "../controllers";
+import { getFotonInv, getFotonRep, getFotonVta } from "../controllers";
 
 export const fotonRoute = Router();
 
@@ -7,5 +7,6 @@ fotonRoute.get("/inv", getFotonInv);
 
 fotonRoute.get("/rep", getFotonRep);
 
-/* router.post('/clientsById', getClientsById); */
+fotonRoute.post("/vta", getFotonVta);
+
 
