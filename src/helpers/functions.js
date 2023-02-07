@@ -13,3 +13,17 @@ export const formatCOP = amount => {
     minimumFractionDigits: 0
   }).format(amount);
 };
+
+export const formatdate = records => {
+  const result = records.map(item => {
+    const date = new Date(item.FechaFactura);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return {
+      ...item,
+      FechaFactura: `${day}/${month}/${year}`
+    };
+  });
+  return result;
+}
