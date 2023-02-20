@@ -85,7 +85,7 @@ export const getFcaRep = async (req, res) => {
     img.carrousel_img AS carrousel_img,
     img.collage_img AS collage_img
     FROM REFINV01_2021_FCA AS I1 -- cambiar la tabla por marca
-    LEFT JOIN img_modelo AS img ON img.modelo = I1.NumeroParte`);
+    INNER JOIN img_modelo AS img ON img.modelo = I1.NumeroParte`);
 
     if (!!fca) {
       const pricedReps = fca.recordset.map((rep) => {

@@ -85,7 +85,7 @@ export const getFordrep = async (req, res) => {
     img.carrousel_img AS carrousel_img,
     img.collage_img AS collage_img
     FROM REFINV01_2021_2 AS I1 -- cambiar la tabla por marca
-    LEFT JOIN img_modelo AS img ON img.modelo = I1.NumeroParte`);
+    INNER JOIN img_modelo AS img ON img.modelo = I1.NumeroParte`);
 
     if (!!ford) {
       const pricedReps = ford.recordset.map((rep) => {
