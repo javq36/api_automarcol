@@ -25,5 +25,3 @@ clientRoute.post(
     getClientCarInfo
   );
 
-/* router.post('/clientsById', getClientsById); */
-
