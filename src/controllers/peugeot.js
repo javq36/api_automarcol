@@ -105,6 +105,44 @@ export const getPeugeotRep = async (req, res) => {
   }
 };
 
+export const getPeugeotRepAll = async (req, res) => {
+  /* Getting the connection to the database. */
+  const pool = await getConection();
+
+  try {
+    /* A query to the Service database. */
+
+    const peugeot = await pool.request().query(`select distinct 
+    I1.Bodega AS Marca,
+    I1.NumeroParte AS Parte,
+    I1.descripcion AS Descripcion,
+    I1.existencia,
+    I1.Costo$,
+    img.otro AS otro,
+    img.presentation_img AS presentation_img,
+    img.carrousel_img AS carrousel_img,
+    img.collage_img AS collage_img
+    FROM REFINV01_2021_PEUGEOT AS I1 -- cambiar la tabla por marca
+    LEFT JOIN img_modelo AS img ON img.modelo = I1.NumeroParte`);
+
+    if (!!peugeot) {
+      const pricedReps = peugeot.recordset.map((rep) => {
+        return {
+          ...rep,
+          Costo$: formatCOP(parseInt(rep.Costo$)),
+        };
+      });
+
+      let result = paginateAll(pricedReps, 20);
+      return res.status(200).json(result);
+    }
+    /*  if everything else fails, return a 404 error. */
+    return res.status(404).json({ message: "operation failed" });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const getPeugeotVta = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
