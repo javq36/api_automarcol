@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getFcaInv, getFcaRep, getFcaRepAll, getFcaVta } from "../controllers";
+import { getFcaCarter, getFcaInv, getFcaRep, getFcaRepAll, getFcaVta } from "../controllers";
 
 export const fcaRoute = Router();
 
@@ -10,3 +10,5 @@ fcaRoute.get("/rep", getFcaRep);
 fcaRoute.get("/rep/all", getFcaRepAll);
 
 fcaRoute.post("/vta", getFcaVta);
+
+fcaRoute.get("/carter", getFcaCarter);

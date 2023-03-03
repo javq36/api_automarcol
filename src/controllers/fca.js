@@ -343,3 +343,23 @@ export const getFcaVta = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
+
+export const getFcaCarter = async (req, res) => {
+  /* Getting the connection to the database. */
+  const pool = await getConection();
+
+  try {
+    /* A query to the Service database. */
+
+    const fca = await pool.request().query(`select * from CARTER01_FCA`);
+
+    if (!!fca) {
+      return res.status(200).json(fca.recordset);
+    }
+    /*  if everything else fails, return a 404 error. */
+    return res.status(404).json({ message: "operation failed" });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
