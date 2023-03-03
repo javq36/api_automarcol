@@ -354,7 +354,7 @@ export const getBajajCarter = async (req, res) => {
   try {
     /* A query to the Service database. */
 
-    const bajaj = await pool.request().query(`select * from CARTER01_BAJAJ`);
+    const bajaj = await pool.request().query(`select * from CARTER01_2021_BAJAJ`);
 
     if (!!bajaj) {
       return res.status(200).json(bajaj.recordset);

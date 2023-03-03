@@ -355,7 +355,7 @@ export const getFotonCarter = async (req, res) => {
   try {
     /* A query to the Service database. */
 
-    const foton = await pool.request().query(`select * from CARTER01_FOTON`);
+    const foton = await pool.request().query(`select * from CARTER01_2021_FOTON`);
 
     if (!!foton) {
       return res.status(200).json(foton.recordset);
