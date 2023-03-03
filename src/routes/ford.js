@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getFordInv, getFordrep, getFordrepAll, getFordVta } from "../controllers";
+import { getFordCarter, getFordInv, getFordrep, getFordrepAll, getFordVta } from "../controllers";
 
 export const fordRoute = Router();
 
@@ -10,3 +10,5 @@ fordRoute.get("/rep", getFordrep);
 fordRoute.get("/rep/all", getFordrepAll);
 
 fordRoute.post("/vta", getFordVta);
+
+fordRoute.get("/carter", getFordCarter);
