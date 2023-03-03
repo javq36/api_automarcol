@@ -352,7 +352,7 @@ export const getFcaCarter = async (req, res) => {
   try {
     /* A query to the Service database. */
 
-    const fca = await pool.request().query(`select * from CARTER01_FCA`);
+    const fca = await pool.request().query(`select * from CARTER01_2021_FCA`);
 
     if (!!fca) {
       return res.status(200).json(fca.recordset);
