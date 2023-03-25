@@ -455,7 +455,7 @@ export const getPeugeotVta = async (req, res) => {
         };
       });
 
-      let gananciaNeta = sumVta - sumDev;
+      let gananciaNeta = sumVta + sumDev;
       let fixedDate = formatdate(pricedReps);
       let fixedDateDev = formatdate(pricedRepsDev);
       const fixModel = fixedDate.map(
