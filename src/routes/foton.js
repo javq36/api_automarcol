@@ -9,6 +9,6 @@ fotonRoute.get("/rep", getFotonRep);
 
 fotonRoute.get("/rep/all", getFotonRepAll);
 
-fotonRoute.post("/vta", getFotonVta);
+fotonRoute.get("/vta", getFotonVta);
 
 fotonRoute.get("/carter", getFotonCarter);

@@ -9,6 +9,6 @@ bajajRoute.get("/rep", getBajajrep);
 
 bajajRoute.get("/rep/all", getBajajrepAll);
 
-bajajRoute.post("/vta", getBajajVta);
+bajajRoute.get("/vta", getBajajVta);
 
 bajajRoute.get("/carter", getBajajCarter);

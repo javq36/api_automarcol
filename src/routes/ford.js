@@ -9,6 +9,6 @@ fordRoute.get("/rep", getFordrep);
 
 fordRoute.get("/rep/all", getFordrepAll);
 
-fordRoute.post("/vta", getFordVta);
+fordRoute.get("/vta", getFordVta);
 
 fordRoute.get("/carter", getFordCarter);

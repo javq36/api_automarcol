@@ -157,13 +157,15 @@ export const getFordVta = async (req, res) => {
 
   const today = new Date();
 
-  if(initialMonth === '' && initialYear === ''){
+  if (initialMonth === "" && initialYear === "") {
     initialMonth = String(today.getMonth() + 1);
     finalMonth = initialMonth;
     initialYear = String(today.getFullYear());
     finalYear = initialYear;
-    initialDay = '1'
-    finalDay = String(new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate());
+    initialDay = "1";
+    finalDay = String(
+      new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()
+    );
   }
 
   const initialString = `${initialYear}-${initialMonth}-${initialDay}`;
@@ -429,13 +431,14 @@ export const getFordVta = async (req, res) => {
     AND (h.ventatotal < 0)`);
 
     if (!!ford) {
+      const sumVta = ford.recordset.reduce((acc, row) => acc + row.ventatotal, 0);
       const pricedReps = ford.recordset.map((rep) => {
         return {
           ...rep,
           ventatotal: formatCOP(parseInt(rep.ventatotal)),
         };
       });
-
+      const sumDev = fordDev.recordset.reduce((acc, row) => acc + row.ventatotal, 0);
       const pricedRepsDev = fordDev.recordset.map((rep) => {
         return {
           ...rep,
@@ -490,7 +493,8 @@ export const getFordVta = async (req, res) => {
           Telefono: telefono,
         };
       });
-      return res.status(200).json([result, resultldev]);
+      let gananciaNeta = sumVta - sumDev
+      return res.status(200).json([result, resultldev, sumVta, sumDev, gananciaNeta]);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });
