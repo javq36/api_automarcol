@@ -456,7 +456,7 @@ export const getBajajVta = async (req, res) => {
         };
       });
 
-      let gananciaNeta = sumDev - sumDev;
+      let gananciaNeta = sumDev + sumDev;
 
       let fixedDate = formatdate(pricedReps);
       let fixedDateDev = formatdate(pricedRepsDev);
