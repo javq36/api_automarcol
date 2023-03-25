@@ -9,6 +9,6 @@ fcaRoute.get("/rep", getFcaRep);
 
 fcaRoute.get("/rep/all", getFcaRepAll);
 
-fcaRoute.post("/vta", getFcaVta);
+fcaRoute.get("/vta", getFcaVta);
 
 fcaRoute.get("/carter", getFcaCarter);

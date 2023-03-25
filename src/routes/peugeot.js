@@ -9,6 +9,6 @@ peugeotRoute.get("/rep", getPeugeotRep);
 
 peugeotRoute.get("/rep/all", getPeugeotRepAll);
 
-peugeotRoute.post("/vta", getPeugeotVta);
+peugeotRoute.get("/vta", getPeugeotVta);
 
 peugeotRoute.get("/carter", getPeugeotCarter);
