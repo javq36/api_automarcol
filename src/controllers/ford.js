@@ -494,7 +494,7 @@ export const getFordVta = async (req, res) => {
         };
       });
       let gananciaNeta = sumVta - sumDev
-      return res.status(200).json([result, resultldev, sumVta, sumDev, gananciaNeta]);
+      return res.status(200).json([result, resultldev, {vta: sumVta}, {dev: sumDev}, {neto: gananciaNeta}]);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });
