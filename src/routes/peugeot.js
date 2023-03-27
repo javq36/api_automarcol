@@ -1,5 +1,12 @@
 import { Router } from "express";
-import { getPeugeotCarter, getPeugeotInv, getPeugeotRep, getPeugeotRepAll, getPeugeotVta } from "../controllers";
+import {
+  getPeugeotCarter,
+  getPeugeotInv,
+  getPeugeotRep,
+  getPeugeotRepAll,
+  getPeugeotVentastaller,
+  getPeugeotVta,
+} from "../controllers";
 
 export const peugeotRoute = Router();
 
@@ -9,6 +16,8 @@ peugeotRoute.get("/rep", getPeugeotRep);
 
 peugeotRoute.get("/rep/all", getPeugeotRepAll);
 
-peugeotRoute.get("/vta", getPeugeotVta);
+peugeotRoute.post("/vta", getPeugeotVta);
+
+peugeotRoute.post("/vtaTall", getPeugeotVentastaller);
 
 peugeotRoute.get("/carter", getPeugeotCarter);
