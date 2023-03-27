@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getBajajCarter, getBajajInv, getBajajrep, getBajajrepAll, getBajajVta } from "../controllers/bajaj";
+import { getBajajCarter, getBajajInv, getBajajrep, getBajajrepAll, getBajajVentastaller, getBajajVta } from "../controllers/bajaj";
 
 export const bajajRoute = Router();
 
@@ -9,6 +9,8 @@ bajajRoute.get("/rep", getBajajrep);
 
 bajajRoute.get("/rep/all", getBajajrepAll);
 
-bajajRoute.get("/vta", getBajajVta);
+bajajRoute.post("/vta", getBajajVta);
+
+bajajRoute.post("/vtaTall", getBajajVentastaller);
 
 bajajRoute.get("/carter", getBajajCarter);

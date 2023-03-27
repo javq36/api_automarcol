@@ -534,3 +534,285 @@ export const getFotonCarter = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
+export const getFotonVentastaller = async (req, res) => {
+  /* Getting the connection to the database. */
+  const pool = await getConection();
+
+  try {
+    /* A query to the Service database. */
+    let {
+      initialMonth,
+      finalMonth,
+      initialYear,
+      finalYear,
+      initialDay,
+      finalDay,
+    } = req.body;
+
+    const today = new Date();
+
+    if (initialMonth === "" && initialYear === "") {
+      initialMonth = String(today.getMonth() + 1);
+      finalMonth = initialMonth;
+      initialYear = String(today.getFullYear());
+      finalYear = initialYear;
+      initialDay = "1";
+      finalDay = String(
+        new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()
+      );
+    }
+
+    const initialString = `${initialYear}-${initialMonth}-${initialDay}`;
+    const finalString = `${finalYear}-${finalMonth}-${finalDay}`;
+    const initialDate = new Date(Date.parse(initialString));
+    const finalDate = new Date(Date.parse(finalString));
+
+    const fotonMos = await pool.request()
+      .query(`SELECT CONVERT(varchar, z.fecha, 103) AS FechaFactura, 
+      z.tipo + '-' + CONVERT(varchar(15), z.numero) AS Factura, 
+      CASE WHEN d .condicion = 01 THEN 'contado' ELSE 'Credito' END AS TipoPago, 
+      z.descuento AS Descuento, 
+      CASE WHEN z.vta_bruta = 0 THEN (CONVERT(money, ((z.vta_bruta + d .iva) - z.descuento) * - 1)) ELSE (CONVERT(money, ((z.vta_bruta + d .iva) - z.descuento))) END AS VentaTotal,
+      CASE WHEN z.vta_bruta = 0 THEN CONVERT(money, z.costo * - 1) ELSE CONVERT(money, z.costo) END AS Costo, 
+      z.vendedor AS CedulaAsesorComercial,
+      t.nombres AS NombreAsesorComercial,
+      z.nit AS NIT_Cedula, 
+      '' as RazonSocial,
+      te.nombres as NombreCliente, 
+      te.direccion, ISNULL(te.telefono_1, '') AS Telefono, 
+      ISNULL(te.celular, '') AS Celular, 
+      ISNULL(te.mail, '') AS Email
+  FROM            dbo.z_vta_repuestos AS z LEFT OUTER JOIN
+      dbo.documentos AS d ON z.tipo = d.tipo AND z.numero = d.numero LEFT OUTER JOIN
+      dbo.referencias AS r ON z.codigo = r.codigo LEFT OUTER JOIN
+      dbo.terceros AS t ON z.vendedor = t.nit LEFT OUTER JOIN
+      dbo.terceros AS te ON te.nit = z.nit LEFT OUTER JOIN
+      dbo.terceros_nombres AS tn ON te.nit = tn.nit LEFT OUTER JOIN
+      dbo.Crmv_terceros_medio_contacto AS cr ON te.id = cr.IdTerceros
+  WHERE (z.nit <> 900531238) AND (z.tipo = 'FVMF') AND (z.fecha BETWEEN '${initialDate
+    .toISOString()
+    .slice(0, 10)} 00:00:00.000' AND '${finalDate
+      .toISOString()
+      .slice(0, 10)} 23:59:59.999')`);
+
+    const fotonMosDev = await pool.request()
+      .query(`SELECT CONVERT(varchar, z.fecha, 103) AS FechaFactura, 
+      z.tipo + '-' + CONVERT(varchar(15), z.numero) AS Factura, 
+      CASE WHEN d .condicion = 01 THEN 'contado' ELSE 'Credito' END AS TipoPago, 
+      z.descuento AS Descuento, 
+      CASE WHEN z.vta_bruta = 0 THEN (CONVERT(money, ((z.vta_bruta + d .iva) - z.descuento) * - 1)) ELSE (CONVERT(money, ((z.vta_bruta + d .iva) - z.descuento))) END AS VentaTotal,
+      CASE WHEN z.vta_bruta = 0 THEN CONVERT(money, z.costo * - 1) ELSE CONVERT(money, z.costo) END AS Costo, 
+      z.vendedor AS CedulaAsesorComercial,
+      t.nombres AS NombreAsesorComercial,
+      z.nit AS NIT_Cedula, 
+      '' as RazonSocial,
+      te.nombres as NombreCliente, 
+      te.direccion, ISNULL(te.telefono_1, '') AS Telefono, 
+      ISNULL(te.celular, '') AS Celular, 
+      ISNULL(te.mail, '') AS Email
+  FROM            dbo.z_vta_repuestos AS z LEFT OUTER JOIN
+      dbo.documentos AS d ON z.tipo = d.tipo AND z.numero = d.numero LEFT OUTER JOIN
+      dbo.referencias AS r ON z.codigo = r.codigo LEFT OUTER JOIN
+      dbo.terceros AS t ON z.vendedor = t.nit LEFT OUTER JOIN
+      dbo.terceros AS te ON te.nit = z.nit LEFT OUTER JOIN
+      dbo.terceros_nombres AS tn ON te.nit = tn.nit LEFT OUTER JOIN
+      dbo.Crmv_terceros_medio_contacto AS cr ON te.id = cr.IdTerceros
+  WHERE (z.nit <> 900531238) AND (z.tipo = 'DFMF') AND (z.fecha BETWEEN '${initialDate
+    .toISOString()
+    .slice(0, 10)} 00:00:00.000' AND '${finalDate
+      .toISOString()
+      .slice(0, 10)} 23:59:59.999')`);
+
+    const fotonTall = await pool.request()
+      .query(`SELECT  CONVERT(varchar, v.fecha_facturacion, 103) AS FechaFactura, 
+      LTRIM(RTRIM(v.tipo_num_fac)) AS Factura,  
+      ISNULL(cp.descripcion, 'CONTADO') AS TipoPago,
+     (
+    CASE 
+      WHEN clase_operacion = 'T' 
+        AND v.descripcion_operacion NOT IN ('INSUMOS', 'CONTROL DE CALIDAD', 'LAVADO VEH REPARADO') 
+        THEN valor_descuento 
+      ELSE 0 
+    END 
+    +
+    CASE 
+      WHEN clase_operacion IN ('R', 'T') 
+        AND v.descripcion_operacion IN ('INSUMOS', 'CONTROL DE CALIDAD', 'LAVADO VEH REPARADO') 
+        THEN valor_descuento 
+      ELSE 0 
+    END
+  ) AS Descuento, 
+  v.Subtotal_venta - v.Valor_descuento + v.IVA AS VentaTotal, 
+  v.Subtotal_Costo AS Costo,
+  v.nit_vendedor AS CedulaAsesorComercial, 
+  ISNULL(v.Asesor, '') AS NombreAsesorComercial, 
+  v.nit_cliente AS NIT_Cedula,
+  ISNULL(v.razon_social, '') as RazonSocial,
+  v.Cliente AS NombreCliente, 
+  ISNULL(v.Direccion, '') AS direccion, 
+  ISNULL(v.telefono_1, '') AS Telefono1, 
+  ISNULL(v.celular_1, '') AS Celular1, 
+  ISNULL(v.telefono_2, '') AS Telefono2, 
+  ISNULL(v.celular_2, '') AS Celular2, 
+  ISNULL(v.email, '') AS Email
+  FROM    dbo.v_tall_detalle_simetrical AS v LEFT OUTER JOIN
+          dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
+  WHERE   (v.bodega IN (14)) 
+      AND (v.sw = 1)  AND (v.fecha_facturacion BETWEEN '${initialDate
+        .toISOString()
+        .slice(0, 10)} 00:00:00.000' AND '${finalDate
+      .toISOString()
+      .slice(0, 10)} 23:59:59.999')`);
+
+    const fotonTallDev = await pool.request()
+      .query(`SELECT  CONVERT(varchar, v.fecha_facturacion, 103) AS FechaFactura, 
+      LTRIM(RTRIM(v.tipo_num_fac)) AS Factura,  
+      ISNULL(cp.descripcion, 'CONTADO') AS TipoPago,
+     (
+    CASE 
+      WHEN clase_operacion = 'T' 
+        AND v.descripcion_operacion NOT IN ('INSUMOS', 'CONTROL DE CALIDAD', 'LAVADO VEH REPARADO') 
+        THEN valor_descuento 
+      ELSE 0 
+    END 
+    +
+    CASE 
+      WHEN clase_operacion IN ('R', 'T') 
+        AND v.descripcion_operacion IN ('INSUMOS', 'CONTROL DE CALIDAD', 'LAVADO VEH REPARADO') 
+        THEN valor_descuento 
+      ELSE 0 
+    END
+  ) AS Descuento, 
+  v.Subtotal_venta - v.Valor_descuento + v.IVA AS VentaTotal, 
+  v.Subtotal_Costo AS Costo,
+  v.nit_vendedor AS CedulaAsesorComercial, 
+  ISNULL(v.Asesor, '') AS NombreAsesorComercial, 
+  v.nit_cliente AS NIT_Cedula,
+  ISNULL(v.razon_social, '') as RazonSocial,
+  v.Cliente AS NombreCliente, 
+  ISNULL(v.Direccion, '') AS direccion, 
+  ISNULL(v.telefono_1, '') AS Telefono1, 
+  ISNULL(v.celular_1, '') AS Celular1, 
+  ISNULL(v.telefono_2, '') AS Telefono2, 
+  ISNULL(v.celular_2, '') AS Celular2, 
+  ISNULL(v.email, '') AS Email
+  FROM    dbo.v_tall_detalle_simetrical AS v LEFT OUTER JOIN
+          dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
+  WHERE   (v.bodega IN (14)) 
+      AND (v.sw = 2)  AND (v.fecha_facturacion BETWEEN '${initialDate
+        .toISOString()
+        .slice(0, 10)} 00:00:00.000' AND '${finalDate
+      .toISOString()
+      .slice(0, 10)} 23:59:59.999')`);
+
+    if (!!fotonMos) {
+      const fixedMos = fotonMos.recordset.map((obj) => {
+        const cliente =
+          obj.NombreCliente || obj.RazonSocial || "No se encontraron datos";
+        const telefono =
+          obj.Telefono || obj.Celular || "No se encontraron datos";
+
+        const { NombreCliente, RazonSocial, Telefono, Celular, ...newObj } =
+          obj;
+
+        return {
+          ...newObj,
+          Cliente: cliente,
+          Telefono: telefono,
+        };
+      });
+
+      const fixedMosDev = fotonMosDev.recordset.map((obj) => {
+        const cliente =
+          obj.NombreCliente || obj.RazonSocial || "No se encontraron datos";
+        const telefono =
+          obj.Telefono || obj.Celular || "No se encontraron datos";
+
+        const { NombreCliente, RazonSocial, Telefono, Celular, ...newObj } =
+          obj;
+
+        return {
+          ...newObj,
+          Cliente: cliente,
+          Telefono: telefono,
+        };
+      });
+
+      const fixedTall = fotonTall.recordset.map((obj) => {
+        const cliente =
+          obj.NombreCliente || obj.RazonSocial || "No se encontraron datos";
+        const telefono =
+          obj.Telefono1 || obj.Celular1 || obj.Telefono2 || obj.Celular2 ||"No se encontraron datos";
+
+        const { NombreCliente, RazonSocial, Telefono1, Celular1, Telefono2, Celular2, ...newObj } =
+          obj;
+
+        return {
+          ...newObj,
+          Cliente: cliente,
+          Telefono: telefono,
+        };
+      });
+
+      const fixedTallDev = fotonTallDev.recordset.map((obj) => {
+        const cliente =
+          obj.NombreCliente || obj.RazonSocial || "No se encontraron datos";
+        const telefono =
+          obj.Telefono1 || obj.Celular1 || obj.Telefono2 || obj.Celular2 ||"No se encontraron datos";
+
+        const { NombreCliente, RazonSocial, Telefono1, Celular1, Telefono2, Celular2, ...newObj } =
+          obj;
+
+        return {
+          ...newObj,
+          Cliente: cliente,
+          Telefono: telefono,
+        };
+      });
+
+      const totalVentas = fixedMos.concat(fixedTall)
+      const totalDevoluciones = fixedMosDev.concat(fixedTallDev)
+
+      const sumVta = totalVentas.reduce(
+        (acc, row) => acc + row.VentaTotal,
+        0
+      );
+
+      const sumDev = totalDevoluciones.reduce(
+        (acc, row) => acc + row.VentaTotal,
+        0
+      );
+
+      const totalNeto = sumVta + sumDev
+
+      const pricedVta = totalVentas.map((rep) => {
+        return {
+          ...rep,
+          VentaTotal: formatCOP(parseInt(rep.VentaTotal)),
+        };
+      });
+
+      const pricedDev = totalDevoluciones.map((rep) => {
+        return {
+          ...rep,
+          VentaTotal: formatCOP(parseInt(rep.VentaTotal)),
+        };
+      });
+
+      return res
+        .status(200)
+        .json([
+          pricedVta,
+          pricedDev,
+          sumVta,
+          sumDev,
+          totalNeto
+        ]);
+    }
+    /*  if everything else fails, return a 404 error. */
+    return res.status(404).json({ message: "operation failed" });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
