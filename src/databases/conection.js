@@ -4,7 +4,7 @@ const dbSettings = {
   user: "Sistemas",
   password: "S1st3ma5+2023,",
   server: "190.85.51.38",
-  /* server: "192.168.1.91", */
+  /* server: "192.168.1.91", provisional */
   port: 1433,
   connectionTimeout: 30000,
   instance: "MSSQLSERVER",
