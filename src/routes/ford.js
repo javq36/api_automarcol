@@ -3,7 +3,7 @@ import { getFordCarter, getFordInv, getFordrep, getFordrepAll, getFordVentastall
 
 export const fordRoute = Router();
 
-//fordRoute.get("/inv", getFordInv);
+fordRoute.get("/inv", getFordInv);
 
 fordRoute.get("/rep", getFordrep);
 
