@@ -19,7 +19,7 @@ export const getDocumentsTerceros = async (req, res) => {
         WHERE d.nit = @nit 
           AND d.sw IN (1, 2, 3, 4, 5, 6, 21, 22, 23, 31, 32) 
           AND d.anulado = 0 
-          AND d.fecha BETWEEN '@fechaInicio' AND '@fechaFin' -- Adding single quotes here
+          AND d.fecha BETWEEN @fechaInicio AND @fechaFin
         ORDER BY d.fecha, d.fecha_hora
       `);
 
