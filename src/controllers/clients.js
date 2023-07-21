@@ -22,7 +22,7 @@ export const getDocumentsTerceros = async (req, res) => {
             OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth})
             OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) <= ${finalMonth})
           )
-        ORDER BY d.fecha, d.fecha_hora
+        ORDER BY d.fecha DESC
       `);
 
     res.status(200).json(result.recordset);
