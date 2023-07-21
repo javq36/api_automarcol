@@ -1,20 +1,15 @@
 import { getConection } from "../databases/conection";
+
 export const getDocumentsTerceros = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
-  let { nit, initialMonth, finalMonth, initialYear, finalYear, initialDay, finalDay } = req.body;
-
-  // Formar las fechas completas
-  const initialDate = `${initialYear}-${initialMonth.padStart(2, '0')}-${initialDay.padStart(2, '0')}`;
-  const finalDate = `${finalYear}-${finalMonth.padStart(2, '0')}-${finalDay.padStart(2, '0')}`;
+  let { nit, initialMonth, finalMonth, initialYear, finalYear } = req.body;
 
   try {
     /* A query to the database. */
     const result = await pool
       .request()
       .input('nit', nit)
-      .input('fechaInicio', initialDate)
-      .input('fechaFin', finalDate)
       .query(`
         SELECT d.*, t.nombres 
         FROM documentos d WITH (INDEX = IX_documentos_nit)  
@@ -22,7 +17,11 @@ export const getDocumentsTerceros = async (req, res) => {
         WHERE d.nit = @nit 
           AND d.sw IN (1, 2, 3, 4, 5, 6, 21, 22, 23, 31, 32) 
           AND d.anulado = 0 
-          AND d.fecha BETWEEN @fechaInicio AND @fechaFin
+          AND (
+            (YEAR(d.fecha) >= ${initialYear} AND YEAR(d.fecha) <= ${finalYear})
+            OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth})
+            OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) <= ${finalMonth})
+          )
         ORDER BY d.fecha, d.fecha_hora
       `);
 
@@ -31,7 +30,6 @@ export const getDocumentsTerceros = async (req, res) => {
     res.status(500).json(error);
   }
 };
-
 
 
 
