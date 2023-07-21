@@ -1,25 +1,16 @@
 import { getConection } from "../databases/conection";
-
 export const getDocumentsTerceros = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
-  let { nit, initialDate, finalDate } = req.body;
-
-  // Convertir las cadenas de texto a objetos Date
-  const startDate = new Date(initialDate);
-  const endDate = new Date(finalDate);
-
-  // Ajustar las fechas para el rango del día completo
-  const startDateFormatted = new Date(startDate.setHours(0, 0, 0, 0));
-  const endDateFormatted = new Date(endDate.setHours(23, 59, 59, 999));
+  let { nit, fechaInicio, fechaFin } = req.body;
 
   try {
     /* A query to the database. */
     const result = await pool
       .request()
       .input('nit', nit)
-      .input('fechaInicio', startDateFormatted.toISOString()) // Using the formatted dates
-      .input('fechaFin', endDateFormatted.toISOString()) // Using the formatted dates
+      .input('fechaInicio', fechaInicio) // fechaInicio is already in 'YYYY-MM-DD' format
+      .input('fechaFin', fechaFin) // fechaFin is already in 'YYYY-MM-DD' format
       .query(`
         SELECT d.*, t.nombres 
         FROM documentos d WITH (INDEX = IX_documentos_nit)  
@@ -36,6 +27,7 @@ export const getDocumentsTerceros = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
 
 
 export const getClients = async (req, res) => {
