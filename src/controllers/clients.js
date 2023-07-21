@@ -18,8 +18,8 @@ export const getDocumentsTerceros = async (req, res) => {
     const result = await pool
       .request()
       .input('nit', nit)
-      .input('fechaInicio', startDateFormatted) // Using the formatted dates
-      .input('fechaFin', endDateFormatted) // Using the formatted dates
+      .input('fechaInicio', startDateFormatted.toISOString()) // Using the formatted dates
+      .input('fechaFin', endDateFormatted.toISOString()) // Using the formatted dates
       .query(`
         SELECT d.*, t.nombres 
         FROM documentos d WITH (INDEX = IX_documentos_nit)  
@@ -36,7 +36,6 @@ export const getDocumentsTerceros = async (req, res) => {
     res.status(500).json(error);
   }
 };
-
 
 
 export const getClients = async (req, res) => {
