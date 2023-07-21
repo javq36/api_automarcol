@@ -2,15 +2,19 @@ import { getConection } from "../databases/conection";
 export const getDocumentsTerceros = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
-  let { nit, fechaInicio, fechaFin } = req.body;
+  let { nit, initialMonth, finalMonth, initialYear, finalYear, initialDay, finalDay } = req.body;
+
+  // Formar las fechas completas
+  const initialDate = `${initialYear}-${initialMonth.padStart(2, '0')}-${initialDay.padStart(2, '0')}`;
+  const finalDate = `${finalYear}-${finalMonth.padStart(2, '0')}-${finalDay.padStart(2, '0')}`;
 
   try {
     /* A query to the database. */
     const result = await pool
       .request()
       .input('nit', nit)
-      .input('fechaInicio', fechaInicio) // fechaInicio is already in 'YYYY-MM-DD' format
-      .input('fechaFin', fechaFin) // fechaFin is already in 'YYYY-MM-DD' format
+      .input('fechaInicio', initialDate)
+      .input('fechaFin', finalDate)
       .query(`
         SELECT d.*, t.nombres 
         FROM documentos d WITH (INDEX = IX_documentos_nit)  
@@ -27,6 +31,7 @@ export const getDocumentsTerceros = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
 
 
 
