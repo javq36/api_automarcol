@@ -9,14 +9,17 @@ export const getDocumentsTerceros = async (req, res) => {
     /* A query to the database. */
     const result = await pool
       .request()
+      .input('nit', nit) // Using parameter for 'nit'
+      .input('fechaInicio', fechaInicio) // Using parameter for 'fechaInicio'
+      .input('fechaFin', fechaFin) // Using parameter for 'fechaFin'
       .query(`
         SELECT d.*, t.nombres 
         FROM documentos d WITH (INDEX = IX_documentos_nit)  
         JOIN terceros t ON d.vendedor = t.nit  
-        WHERE d.nit = ${nit} 
-          AND d.sw IN(1,2,3,4,5,6,21,22,23,31,32) 
+        WHERE d.nit = @nit 
+          AND d.sw IN (1, 2, 3, 4, 5, 6, 21, 22, 23, 31, 32) 
           AND d.anulado = 0 
-          AND d.fecha BETWEEN ${fechaInicio} AND ${fechaFin} 
+          AND d.fecha BETWEEN @fechaInicio AND @fechaFin 
         ORDER BY d.fecha, d.fecha_hora
       `);
 
@@ -25,6 +28,7 @@ export const getDocumentsTerceros = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
 
 export const getClients = async (req, res) => {
   /* Getting the connection to the database. */
