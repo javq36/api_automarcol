@@ -1,5 +1,22 @@
 import { getConection } from "../databases/conection";
 
+export const getDocumentsTerceros = async (req, res) => {
+  /* Getting the connection to the database. */
+  const pool = await getConection();
+  let nit = "1090432665";
+
+  try {
+    /* A query to the database. */
+    const result = await pool
+      .request()
+      .query(` Select d.*, t.nombres FROM documentos d  WITH (INDEX = IX_documentos_nit)  Join terceros t ON d.vendedor=t.nit  WHERE d.nit = 901448497 AND d.sw IN(1,2,3,4,5,6,21,22,23,31,32) AND d.anulado=0 AND d.fecha between '20091111' and '20230731'  ORDER BY d.fecha,d.fecha_hora`);
+
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const getClients = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
