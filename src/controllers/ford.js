@@ -654,7 +654,7 @@ export const getFordVentastaller = async (req, res) => {
   FROM    dbo.v_tall_detalle_simetrical AS v LEFT OUTER JOIN
           dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
   WHERE   (v.bodega IN (5)) 
-      AND (v.sw = 1)  AND (v.fecha_facturacion BETWEEN '${initialDate
+      AND (v.sw = 1) AND v.tipo NOT LIKE '%TI%' AND (v.fecha_facturacion BETWEEN '${initialDate
         .toISOString()
         .slice(0, 10)} 00:00:00.000' AND '${finalDate
       .toISOString()
