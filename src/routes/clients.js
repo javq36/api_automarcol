@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { getClients, getClientsById, getClientCarInfo , getDocumentsTerceros} from "../controllers/";
+import { getClients, getClientsById, getClientCarInfo , getDocumentsTerceros , getMantenimientos } from "../controllers/";
 import { validarCampos } from "../middlewares/";
 import { check } from "express-validator";
 
 export const clientRoute = Router();
 
+
+clientRoute.post("/mantenimientos", getMantenimientos);
 clientRoute.post("/1105", getDocumentsTerceros);
 
 clientRoute.get("/", getClients);
