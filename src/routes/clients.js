@@ -6,7 +6,7 @@ import { check } from "express-validator";
 export const clientRoute = Router();
 
 
-clientRoute.post("/mantenimientos", getMantenimientos);
+clientRoute.get("/mantenimientos", getMantenimientos);
 clientRoute.post("/1105", getDocumentsTerceros);
 
 clientRoute.get("/", getClients);
