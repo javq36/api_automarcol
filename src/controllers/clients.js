@@ -1,5 +1,23 @@
 import { getConection } from "../databases/conection";
 
+
+
+export const getMantenimientos = async (req, res) => {
+  /* Getting the connection to the database. */
+  const pool = await getConection();
+
+  try {
+    /* A query to the database. */
+    const result = await pool
+      .request()
+      .query(`Select * from mantenimientos_cordinar`);
+
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const getDocumentsTerceros = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
