@@ -630,14 +630,14 @@ export const getFotonVentastaller = async (req, res) => {
       ISNULL(cp.descripcion, 'CONTADO') AS TipoPago,
      (
     CASE 
-      WHEN clase_operacion IN ('R', 'T','C','G','V')   
+      WHEN clase_operacion IN ('R', 'T','C','G','V','S')   
         AND v.descripcion_operacion NOT IN ('INSUMOS', 'CONTROL DE CALIDAD', 'LAVADO VEH REPARADO') 
         THEN valor_descuento 
       ELSE 0 
     END 
     +
     CASE 
-      WHEN clase_operacion IN ('R', 'T','C','G','V')  
+      WHEN clase_operacion IN ('R', 'T','C','G','V','S')  
         AND v.descripcion_operacion IN ('INSUMOS', 'CONTROL DE CALIDAD', 'LAVADO VEH REPARADO') 
         THEN valor_descuento 
       ELSE 0 
@@ -671,14 +671,14 @@ export const getFotonVentastaller = async (req, res) => {
       ISNULL(cp.descripcion, 'CONTADO') AS TipoPago,
      (
     CASE 
-      WHEN clase_operacion IN ('R', 'T','C','G','V')   
+      WHEN clase_operacion IN ('R', 'T','C','G','V','S')   
         AND v.descripcion_operacion NOT IN ('INSUMOS', 'CONTROL DE CALIDAD', 'LAVADO VEH REPARADO') 
         THEN valor_descuento 
       ELSE 0 
     END 
     +
     CASE 
-      WHEN clase_operacion IN ('R', 'T','C','G','V')  
+      WHEN clase_operacion IN ('R', 'T','C','G','V','S')  
         AND v.descripcion_operacion IN ('INSUMOS', 'CONTROL DE CALIDAD', 'LAVADO VEH REPARADO') 
         THEN valor_descuento 
       ELSE 0 
