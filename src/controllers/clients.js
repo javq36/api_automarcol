@@ -51,8 +51,7 @@ export const getTall = async (req, res) => {
       LEFT OUTER JOIN dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
       LEFT OUTER JOIN dbo.terceros AS tc ON tc.nit = v.nit_cliente
   WHERE
-      v.bodega = cast(${bodega} as int)
-      --AND CONVERT(date, v.fecha_facturacion, 103) >= '2022'
+      v.bodega = ${bodega}
       AND CONVERT(date, v.fecha_facturacion, 103) = '2023'
       AND v.clase_operacion = 'T'
       AND v.tipo_num_fac NOT LIKE '%FTI%'
