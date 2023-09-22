@@ -10,23 +10,26 @@ export const getTall = async (req, res) => {
       .request()
       .query(`SELECT DISTINCT
        v.tipo_num_fac AS Factura,
- CONVERT(varchar, v.fecha_facturacion, 103) as FechaFactura,
-                v.numero_orden AS NumeroOT,
-      RTRIM(v.razon) AS RazonIngreso,
-      v.descripcion_operacion AS DescripcionOperacion,
-          v.nit_cliente AS NIT,
-      v.Tipo_persona AS TipoPersona,
-         ISNULL(tc.nombres, 'no tiene') AS NombresCliente,
-      ISNULL(v.telefono_1, '') AS Telefono1,
-      ISNULL(v.celular_1, '') AS Celular1,
-      ISNULL(v.telefono_2, '') AS Telefono2,
-      ISNULL(v.celular_2, '') AS Celular2,
-      ISNULL(v.email, '') AS Email,
-      v.serie AS VIN,
-  ISNULL(v.placa, '') AS Placa,
-     v.ano_modelo AS AnoModelo,
-      ISNULL(v.Marca, '') AS Marca,
-       RTRIM(v.descripcion) AS DescripcionModelo
+       CONVERT(varchar, v.fecha_facturacion, 103) as FechaFactura,
+       v.numero_orden AS NumeroOT,
+       RTRIM(v.razon) AS RazonIngreso,
+       v.descripcion_operacion AS DescripcionOperacion,
+       v.nit_cliente AS NIT,
+       v.Tipo_persona AS TipoPersona,
+       ISNULL(tc.nombres, 'no tiene') AS NombresCliente,
+       COALESCE(
+           NULLIF(v.telefono_1, ''),
+           NULLIF(v.celular_1, ''),
+           NULLIF(v.telefono_2, ''),
+           NULLIF(v.celular_2, '')
+       ) AS Telefono,
+       ISNULL(v.email, '') AS Email,
+       v.serie AS VIN,
+       ISNULL(v.placa, '') AS Placa,
+       v.ano_modelo AS AnoModelo,
+       ISNULL(v.Marca, '') AS Marca,
+       RTRIM(v.descripcion) AS DescripcionModelo,
+       ISNULL(CONVERT(varchar, v.Fecha_Cumpleanos, 103), '') AS FechaCumpleaños
   FROM
       dbo.v_tall_detalle_simetrical AS v
       LEFT OUTER JOIN dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
@@ -37,7 +40,8 @@ export const getTall = async (req, res) => {
       AND v.clase_operacion = 'T'
       AND v.tipo_num_fac NOT LIKE '%FTI%'
       AND v.sw = 1
-  ORDER BY FechaFactura DESC
+  ORDER BY FechaFactura DESC;
+
   `);
 
     res.status(200).json(result.recordset);
