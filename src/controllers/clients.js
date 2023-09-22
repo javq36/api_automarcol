@@ -4,7 +4,7 @@ import { getConection } from "../databases/conection";
 export const getTall = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
-  let { bodega } = req.body;
+  let { bodega } = req.body.bodega;
 
   try {
     /* A query to the database. */
