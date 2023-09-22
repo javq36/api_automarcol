@@ -2,7 +2,7 @@ import { getConection } from "../databases/conection";
 
 export const getTall = async (req, res) => {
   const pool = await getConection();
-  let { bodega } = req.body;
+  //let { bodega } = req.body;
   
   try {
     /* A query to the database. */
@@ -49,7 +49,7 @@ export const getTall = async (req, res) => {
       LEFT OUTER JOIN dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
       LEFT OUTER JOIN dbo.terceros AS tc ON tc.nit = v.nit_cliente
   WHERE
-      v.bodega = ${bodega}
+      v.bodega = 5
       AND year(v.fecha_facturacion) >= '2023'
       AND v.clase_operacion = 'T'
       AND v.tipo_num_fac NOT LIKE '%FTI%'
