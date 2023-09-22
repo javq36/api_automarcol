@@ -1,6 +1,71 @@
 import { getConection } from "../databases/conection";
 
 
+export const getTall = async (req, res) => {
+  /* Getting the connection to the database. */
+  const pool = await getConection();
+  let { bodega } = req.body;
+
+  try {
+    /* A query to the database. */
+    const result = await pool
+      .request()
+      .query(`SELECT DISTINCT
+      CONVERT(varchar, v.fecha_facturacion, 103) as FechaFactura,
+      v.tipo_num_fac AS Factura,
+      ISNULL(CONVERT(varchar, v.entrada, 103), '') AS FechaApertura,
+      ISNULL(v.placa, '') AS Placa,
+      v.numero_orden AS NumeroOT,
+      v.Descripcion_bodega AS Taller,
+      RTRIM(v.razon) AS RazonIngreso,
+      CASE
+          WHEN v.clase_operacion = 'R' THEN 'Repuesto'
+          WHEN v.clase_operacion = 'T' THEN 'Mano de Obra'
+          WHEN v.clase_operacion = 'O' THEN 'Trabajo Externo'
+      END AS ClasedeOperacion,
+      v.descripcion_operacion AS DescripcionOperacion,
+      v.descripcion AS Descripcion,
+      ISNULL(NULLIF(v.nombre_operario, '*'), '') AS NombreTecnico,
+      v.operario AS CedulaTecnico,
+      v.Tiempo AS HorasFacturadas,
+      ISNULL(v.Asesor, '') AS NombreAsesor,
+      v.nit_cliente AS NIT,
+      v.Tipo_persona AS TipoPersona,
+      ISNULL(v.razon_social, '') AS RazonSocial,
+      ISNULL(tc.nombres, 'no tiene') AS NombresCliente,
+      ISNULL(CONVERT(varchar, v.Fecha_Cumpleanos, 103), '') AS FechaCumpleaños,
+      ISNULL(v.Direccion, '') AS Direccion,
+      ISNULL(v.telefono_1, '') AS Telefono1,
+      ISNULL(v.celular_1, '') AS Celular1,
+      ISNULL(v.telefono_2, '') AS Telefono2,
+      ISNULL(v.celular_2, '') AS Celular2,
+      ISNULL(v.email, '') AS Email,
+      v.serie AS VIN,
+      v.Tipo_Servicio AS TipoVehiculo,
+      v.ano_modelo AS AnoModelo,
+      ISNULL(v.Marca, '') AS Marca,
+      SUBSTRING(v.linea_vehiculo, 1, 15) AS Linea,
+      RTRIM(v.descripcion) AS DescripcionModelo
+  FROM
+      dbo.v_tall_detalle_simetrical AS v
+      LEFT OUTER JOIN dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
+      LEFT OUTER JOIN dbo.terceros AS tc ON tc.nit = v.nit_cliente
+  WHERE
+      v.bodega = cast(${bodega} as int)
+      --AND CONVERT(date, v.fecha_facturacion, 103) >= '2022'
+      AND CONVERT(date, v.fecha_facturacion, 103) = '2023'
+      AND v.clase_operacion = 'T'
+      AND v.tipo_num_fac NOT LIKE '%FTI%'
+      AND v.sw = 1
+  ORDER BY FechaFactura DESC
+  `);
+
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 
 export const getMantenimientos = async (req, res) => {
   /* Getting the connection to the database. */
