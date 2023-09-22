@@ -8,7 +8,7 @@ export const clientRoute = Router();
 
 clientRoute.get("/mantenimientos", getMantenimientos);
 clientRoute.post("/1105", getDocumentsTerceros);
-clientRoute.post("/getTall", getTall);
+clientRoute.get("/getTall", getTall);
 clientRoute.get("/", getClients);
 
 clientRoute.post(
