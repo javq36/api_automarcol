@@ -1,7 +1,8 @@
 import { getConection } from "../databases/conection";
 
-export const getVts = async (req, res) => {
+export const getNuevos = async (req, res) => {
   const pool = await getConection();
+  
   let { bodega } = req.body;
   
   try {
@@ -26,7 +27,7 @@ export const getVts = async (req, res) => {
         b.modelo_ano AS Ano_modelo,
         b.des_marca AS Marca,
         b.des_modelo AS Version_DescipcionModelo,
-        e.fecha_cumple_ter AS Cumpleaños,
+        CONVERT(CHAR(10),  e.fecha_cumple_ter, 120) AS Fecha_Cumpleanos,
         ROW_NUMBER() OVER(PARTITION BY d.nit ORDER BY h.fecha DESC) AS RowNum
     FROM
         dbo.v_vh_vehiculos AS b
@@ -39,7 +40,7 @@ export const getVts = async (req, res) => {
             AND d.plan_venta = 1
         LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
     WHERE
-        h.bodega = 12
+        h.bodega = ${bodega}
 )
 SELECT *
 FROM CTE
