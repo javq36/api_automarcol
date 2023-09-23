@@ -8,33 +8,53 @@ export const getTall = async (req, res) => {
     /* A query to the database. */
     const result = await pool
       .request()
-      .query(`SELECT DISTINCT
-       v.nit_cliente AS NIT,
-       ISNULL(tc.nombres, 'no tiene') AS NombresCliente,
-       COALESCE(
-           NULLIF(v.telefono_1, ''),
-           NULLIF(v.celular_1, ''),
-           NULLIF(v.telefono_2, ''),
-           NULLIF(v.celular_2, '')
-       ) AS Telefono,
-       ISNULL(v.email, '') AS Email,
-       v.serie AS VIN,
-       ISNULL(v.placa, '') AS Placa,
-       v.ano_modelo AS AnoModelo,
-       ISNULL(v.Marca, '') AS Marca,
-       RTRIM(v.descripcion) AS DescripcionModelo,
-       ISNULL(CONVERT(varchar, v.Fecha_Cumpleanos, 103), '') AS FechaCumpleaños
-  FROM
-      dbo.v_tall_detalle_simetrical AS v
-      LEFT OUTER JOIN dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
-      LEFT OUTER JOIN dbo.terceros AS tc ON tc.nit = v.nit_cliente
-  WHERE
-      v.bodega = ${bodega}
-      AND year(v.fecha_facturacion) >= '2023'
-      AND v.clase_operacion = 'T'
-      AND v.tipo_num_fac NOT LIKE '%FTI%'
-      AND v.sw = 1
-  ORDER BY FechaFactura DESC;
+      .query(`WITH CTE AS (
+    SELECT
+        CONVERT(varchar, v.fecha_facturacion, 103) as FechaFactura,
+        v.nit_cliente AS NIT,
+        ISNULL(tc.nombres, 'no tiene') AS NombresCliente,
+        COALESCE(
+            NULLIF(v.telefono_1, ''),
+            NULLIF(v.celular_1, ''),
+            NULLIF(v.telefono_2, ''),
+            NULLIF(v.celular_2, '')
+        ) AS Telefono,
+        ISNULL(v.email, '') AS Email,
+        v.serie AS VIN,
+        ISNULL(v.placa, '') AS Placa,
+        v.ano_modelo AS AnoModelo,
+        ISNULL(v.Marca, '') AS Marca,
+        RTRIM(v.descripcion) AS DescripcionModelo,
+        ISNULL(CONVERT(varchar, v.Fecha_Cumpleanos, 103), '') AS FechaCumpleaños,
+        ROW_NUMBER() OVER (PARTITION BY v.nit_cliente ORDER BY v.fecha_facturacion DESC) AS RowNum
+    FROM
+        dbo.v_tall_detalle_simetrical AS v
+        LEFT OUTER JOIN dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
+        LEFT OUTER JOIN dbo.terceros AS tc ON tc.nit = v.nit_cliente
+    WHERE
+        v.bodega = ${bodega}
+        AND YEAR(v.fecha_facturacion) >= 2023
+        AND v.clase_operacion = 'T'
+        AND v.tipo_num_fac NOT LIKE '%FTI%'
+        AND v.sw = 1
+)
+SELECT
+    FechaFactura,
+    NIT,
+    NombresCliente,
+    Telefono,
+    Email,
+    VIN,
+    Placa,
+    AnoModelo,
+    Marca,
+    DescripcionModelo,
+    FechaCumpleaños
+FROM
+    CTE
+WHERE
+    RowNum = 1;
+;
 
   `);
 
