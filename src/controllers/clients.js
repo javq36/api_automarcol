@@ -9,23 +9,25 @@ export const getVts = async (req, res) => {
     const result = await pool
       .request()
       .query(`
-          SELECT DISTINCT
-       CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
+         WITH CTE AS (
+    SELECT
+        CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
         d.nit AS Nit_Cedula,
-    	e.nombres,
-    	 COALESCE(
-                NULLIF(e.telefono_1, ''),
-                NULLIF(e.celular, ''),
-                NULLIF(e.telefono_2, ''),
-                NULLIF(e.celular2, '')
-            ) AS Telefono,
-    	ISNULL(e.mail, '') AS Email,
+        e.nombres,
+        COALESCE(
+            NULLIF(e.telefono_1, ''),
+            NULLIF(e.celular, ''),
+            NULLIF(e.telefono_2, ''),
+            NULLIF(e.celular2, '')
+        ) AS Telefono,
+        ISNULL(e.mail, '') AS Email,
         b.serie AS Vin,
-    	ISNULL(b.placa, '') AS Placa,
+        ISNULL(b.placa, '') AS Placa,
         b.modelo_ano AS Ano_modelo,
         b.des_marca AS Marca,
-    	b.des_modelo AS Version_DescipcionModelo,
-    	e.fecha_cumple_ter AS Cumpleaños
+        b.des_modelo AS Version_DescipcionModelo,
+        e.fecha_cumple_ter AS Cumpleaños,
+        ROW_NUMBER() OVER(PARTITION BY d.nit ORDER BY h.fecha DESC) AS RowNum
     FROM
         dbo.v_vh_vehiculos AS b
         LEFT OUTER JOIN dbo.vh_familias AS c ON b.familia = c.familia
@@ -34,11 +36,15 @@ export const getVts = async (req, res) => {
         LEFT OUTER JOIN dbo.terceros_nombres AS f ON e.nit = f.nit
         LEFT OUTER JOIN dbo.terceros AS g ON d.vendedor = g.nit
         LEFT OUTER JOIN dbo.v_documentos_valores_otras_marcas AS h ON d.codigo = h.codigo
-        AND d.plan_venta = 1
+            AND d.plan_venta = 1
         LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
     WHERE
-       h.bodega = ${bodega}
-       order by FechaFactura desc
+        h.bodega = ${bodega}
+)
+SELECT *
+FROM CTE
+WHERE RowNum = 1
+ORDER BY FechaFactura DESC;
     `);
 
     res.status(200).json(result.recordset);
