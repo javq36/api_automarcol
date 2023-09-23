@@ -9,11 +9,6 @@ export const getTall = async (req, res) => {
     const result = await pool
       .request()
       .query(`SELECT DISTINCT
-       v.tipo_num_fac AS Factura,
-       CONVERT(varchar, v.fecha_facturacion, 103) as FechaFactura,
-       v.numero_orden AS NumeroOT,
-       RTRIM(v.razon) AS RazonIngreso,
-       v.descripcion_operacion AS DescripcionOperacion,
        v.nit_cliente AS NIT,
        ISNULL(tc.nombres, 'no tiene') AS NombresCliente,
        COALESCE(
