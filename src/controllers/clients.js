@@ -1,5 +1,52 @@
 import { getConection } from "../databases/conection";
 
+export const getVts = async (req, res) => {
+  const pool = await getConection();
+  let { bodega } = req.body;
+  
+  try {
+    /* A query to the database. */
+    const result = await pool
+      .request()
+      .query(`
+          SELECT DISTINCT
+       CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
+        d.nit AS Nit_Cedula,
+    	e.nombres,
+    	 COALESCE(
+                NULLIF(e.telefono_1, ''),
+                NULLIF(e.celular, ''),
+                NULLIF(e.telefono_2, ''),
+                NULLIF(e.celular2, '')
+            ) AS Telefono,
+    	ISNULL(e.mail, '') AS Email,
+        b.serie AS Vin,
+    	ISNULL(b.placa, '') AS Placa,
+        b.modelo_ano AS Ano_modelo,
+        b.des_marca AS Marca,
+    	b.des_modelo AS Version_DescipcionModelo,
+    	e.fecha_cumple_ter AS Cumpleaños
+    FROM
+        dbo.v_vh_vehiculos AS b
+        LEFT OUTER JOIN dbo.vh_familias AS c ON b.familia = c.familia
+        LEFT OUTER JOIN dbo.vh_documentos_ped AS d ON b.codigo = d.codigo
+        LEFT OUTER JOIN dbo.terceros AS e ON d.nit = e.nit
+        LEFT OUTER JOIN dbo.terceros_nombres AS f ON e.nit = f.nit
+        LEFT OUTER JOIN dbo.terceros AS g ON d.vendedor = g.nit
+        LEFT OUTER JOIN dbo.v_documentos_valores_otras_marcas AS h ON d.codigo = h.codigo
+        AND d.plan_venta = 1
+        LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
+    WHERE
+       h.bodega = ${bodega}
+       order by FechaFactura desc
+    `);
+
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const getTall = async (req, res) => {
   const pool = await getConection();
   let { bodega } = req.body;
