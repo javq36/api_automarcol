@@ -53,7 +53,9 @@ SELECT
 FROM
     CTE
 WHERE
-    RowNum = 1;
+    RowNum = 1
+ORDER BY FechaFactura desc	
+;
 ;
 
   `);
