@@ -48,9 +48,11 @@ WHERE RowNum = 1
 ORDER BY FechaFactura DESC;
     `);
 
-    res.status(200).json(result.recordset);
+    //res.status(200).json(result.recordset);
+     console.log(req.body);
   } catch (error) {
-    res.status(500).json(error);
+   // res.status(500).json(error);
+    console.log(req.body); // Verifica que req.body contenga 'bodega'
   }
 };
 
