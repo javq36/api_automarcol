@@ -40,7 +40,7 @@ export const getNuevos = async (req, res) => {
             AND d.plan_venta = 1
         LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
     WHERE
-        h.bodega = ${bodega}
+        h.bodega = '${bodega}'
 )
 SELECT *
 FROM CTE
@@ -49,10 +49,10 @@ ORDER BY FechaFactura DESC;
     `);
 
     res.status(200).json(result.recordset);
-    //console.log(req.body);
+    console.log(req.body);
   } catch (error) {
    res.status(500).json(error);
-    //console.log(req.body); // Verifica que req.body contenga 'bodega'
+    console.log(req.body); // Verifica que req.body contenga 'bodega'
   }
 };
 
