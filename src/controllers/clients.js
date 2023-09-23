@@ -6,7 +6,59 @@ export const getNuevos = async (req, res) => {
   let { bodega } = req.body;
   
   try {
-    if (bodega != 3) {
+    if (bodega === 3) {
+       const result = await pool
+        .request()
+        .query(`
+          WITH CTE AS (
+    SELECT
+        CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
+        d.nit AS Nit_Cedula,
+        e.nombres,
+        COALESCE(
+            NULLIF(e.telefono_1, ''),
+            NULLIF(e.celular, ''),
+            NULLIF(e.telefono_2, ''),
+            NULLIF(e.celular2, '')
+        ) AS Telefono,
+        ISNULL(e.mail, '') AS Email,
+        b.serie AS Vin,
+        ISNULL(b.placa, '') AS Placa,
+        b.modelo_ano AS Ano_modelo,
+        b.des_marca AS Marca,
+        b.des_modelo AS Version_DescipcionModelo,
+        CONVERT(CHAR(10),  e.fecha_cumple_ter, 120) AS Fecha_Cumpleanos,
+        ROW_NUMBER() OVER(PARTITION BY d.nit ORDER BY h.fecha DESC) AS RowNum
+    FROM
+        dbo.v_vh_vehiculos AS b
+        LEFT OUTER JOIN dbo.vh_familias AS c ON b.familia = c.familia
+        LEFT OUTER JOIN dbo.vh_documentos_ped AS d ON b.codigo = d.codigo
+        LEFT OUTER JOIN dbo.terceros AS e ON d.nit = e.nit
+        LEFT OUTER JOIN dbo.terceros_nombres AS f ON e.nit = f.nit
+        LEFT OUTER JOIN dbo.terceros AS g ON d.vendedor = g.nit
+        LEFT OUTER JOIN dbo.v_documentos_valores AS h ON d.codigo = h.codigo
+            AND d.plan_venta = 1
+        LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
+    WHERE
+        h.bodega = 3
+)
+SELECT
+    FechaFactura,
+    Nit_Cedula,
+    nombres,
+    Telefono,
+    Email,
+    Vin,
+    Placa,
+    Ano_modelo,
+    Marca,
+    Version_DescipcionModelo,
+    Fecha_Cumpleanos
+FROM CTE
+WHERE RowNum = 1
+ORDER BY FechaFactura DESC;
+        `);
+    } else {
       const result = await pool
       .request()
       .query(`
@@ -58,60 +110,6 @@ FROM CTE
 WHERE RowNum = 1
 ORDER BY FechaFactura DESC;
 `);
-    } else {
-      // Si bodega no es igual a 5, realiza otra consulta SQL
-      const result = await pool
-        .request()
-        .query(`
-          WITH CTE AS (
-    SELECT
-        CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
-        d.nit AS Nit_Cedula,
-        e.nombres,
-        COALESCE(
-            NULLIF(e.telefono_1, ''),
-            NULLIF(e.celular, ''),
-            NULLIF(e.telefono_2, ''),
-            NULLIF(e.celular2, '')
-        ) AS Telefono,
-        ISNULL(e.mail, '') AS Email,
-        b.serie AS Vin,
-        ISNULL(b.placa, '') AS Placa,
-        b.modelo_ano AS Ano_modelo,
-        b.des_marca AS Marca,
-        b.des_modelo AS Version_DescipcionModelo,
-        CONVERT(CHAR(10),  e.fecha_cumple_ter, 120) AS Fecha_Cumpleanos,
-        ROW_NUMBER() OVER(PARTITION BY d.nit ORDER BY h.fecha DESC) AS RowNum
-    FROM
-        dbo.v_vh_vehiculos AS b
-        LEFT OUTER JOIN dbo.vh_familias AS c ON b.familia = c.familia
-        LEFT OUTER JOIN dbo.vh_documentos_ped AS d ON b.codigo = d.codigo
-        LEFT OUTER JOIN dbo.terceros AS e ON d.nit = e.nit
-        LEFT OUTER JOIN dbo.terceros_nombres AS f ON e.nit = f.nit
-        LEFT OUTER JOIN dbo.terceros AS g ON d.vendedor = g.nit
-        LEFT OUTER JOIN dbo.v_documentos_valores AS h ON d.codigo = h.codigo
-            AND d.plan_venta = 1
-        LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
-    WHERE
-        h.bodega = 3
-)
-SELECT
-    FechaFactura,
-    Nit_Cedula,
-    nombres,
-    Telefono,
-    Email,
-    Vin,
-    Placa,
-    Ano_modelo,
-    Marca,
-    Version_DescipcionModelo,
-    Fecha_Cumpleanos
-FROM CTE
-WHERE RowNum = 1
-ORDER BY FechaFactura DESC;
-        `);
-    
     }
  
     res.status(200).json(result.recordset);
