@@ -39,7 +39,7 @@ export const getVts = async (req, res) => {
             AND d.plan_venta = 1
         LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
     WHERE
-        h.bodega = ${bodega}
+        h.bodega = 12
 )
 SELECT *
 FROM CTE
