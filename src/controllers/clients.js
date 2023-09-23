@@ -6,11 +6,11 @@ export const getNuevos = async (req, res) => {
   let { bodega } = req.body;
   
   try {
-    /* A query to the database. */
-    const result = await pool
+    if (bodega === 5) {
+      const result = await pool
       .request()
       .query(`
-         WITH CTE AS (
+        WITH CTE AS (
     SELECT
         CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
         d.nit AS Nit_Cedula,
@@ -40,14 +40,34 @@ export const getNuevos = async (req, res) => {
             AND d.plan_venta = 1
         LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
     WHERE
-        h.bodega = '${bodega}'
+        h.bodega = ${bodega}
 )
-SELECT *
+SELECT
+    FechaFactura,
+    Nit_Cedula,
+    nombres,
+    Telefono,
+    Email,
+    Vin,
+    Placa,
+    Ano_modelo,
+    Marca,
+    Version_DescipcionModelo,
+    Fecha_Cumpleanos
 FROM CTE
 WHERE RowNum = 1
 ORDER BY FechaFactura DESC;
-    `);
-
+`);
+    } else {
+      // Si bodega no es igual a 5, realiza otra consulta SQL
+      const result = await pool
+        .request()
+        .query(`
+          -- Tu segunda consulta SQL aquí
+        `);
+    
+    }
+ 
     res.status(200).json(result.recordset);
     console.log(req.body);
   } catch (error) {
