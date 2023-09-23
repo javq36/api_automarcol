@@ -15,7 +15,6 @@ export const getTall = async (req, res) => {
        RTRIM(v.razon) AS RazonIngreso,
        v.descripcion_operacion AS DescripcionOperacion,
        v.nit_cliente AS NIT,
-       v.Tipo_persona AS TipoPersona,
        ISNULL(tc.nombres, 'no tiene') AS NombresCliente,
        COALESCE(
            NULLIF(v.telefono_1, ''),
