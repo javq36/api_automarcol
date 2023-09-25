@@ -6,7 +6,7 @@ export const getNuevos = async (req, res) => {
   let { bodega } = req.body;
   console.log(bodega);
   try {
-    if (bodega === 3) {
+    if (bodega =='3') {
        const result = await pool
         .request()
         .query(`
@@ -113,10 +113,8 @@ ORDER BY FechaFactura DESC;
     }
  
     res.status(200).json(result.recordset);
-    console.log(req.body);
   } catch (error) {
    res.status(500).json(error);
-    console.log(req.body); // Verifica que req.body contenga 'bodega'
   }
 };
 
