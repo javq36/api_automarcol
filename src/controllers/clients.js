@@ -2,121 +2,124 @@ import { getConection } from "../databases/conection";
 
 export const getNuevos = async (req, res) => {
   const pool = await getConection();
-  
-  let { bodega } = req.body;
-  console.log(bodega);
+  const { bodega } = req.body;
+
   try {
+    const request = pool.request();
+    let sqlQuery = ''; // Inicializamos una variable para almacenar la consulta SQL
+
     if (bodega === '3') {
-       const result = await pool
-        .request()
-        .query(`
-          WITH CTE AS (
-    SELECT
-        CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
-        d.nit AS Nit_Cedula,
-        e.nombres,
-        COALESCE(
-            NULLIF(e.telefono_1, ''),
-            NULLIF(e.celular, ''),
-            NULLIF(e.telefono_2, ''),
-            NULLIF(e.celular2, '')
-        ) AS Telefono,
-        ISNULL(e.mail, '') AS Email,
-        b.serie AS Vin,
-        ISNULL(b.placa, '') AS Placa,
-        b.modelo_ano AS Ano_modelo,
-        b.des_marca AS Marca,
-        b.des_modelo AS Version_DescipcionModelo,
-        CONVERT(CHAR(10),  e.fecha_cumple_ter, 120) AS Fecha_Cumpleanos,
-        ROW_NUMBER() OVER(PARTITION BY d.nit ORDER BY h.fecha DESC) AS RowNum
-    FROM
-        dbo.v_vh_vehiculos AS b
-        LEFT OUTER JOIN dbo.vh_familias AS c ON b.familia = c.familia
-        LEFT OUTER JOIN dbo.vh_documentos_ped AS d ON b.codigo = d.codigo
-        LEFT OUTER JOIN dbo.terceros AS e ON d.nit = e.nit
-        LEFT OUTER JOIN dbo.terceros_nombres AS f ON e.nit = f.nit
-        LEFT OUTER JOIN dbo.terceros AS g ON d.vendedor = g.nit
-        LEFT OUTER JOIN dbo.v_documentos_valores AS h ON d.codigo = h.codigo
-            AND d.plan_venta = 1
-        LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
-    WHERE
-        h.bodega = 3
-)
-SELECT
-    FechaFactura,
-    Nit_Cedula,
-    nombres,
-    Telefono,
-    Email,
-    Vin,
-    Placa,
-    Ano_modelo,
-    Marca,
-    Version_DescipcionModelo,
-    Fecha_Cumpleanos
-FROM CTE
-WHERE RowNum = 1
-ORDER BY FechaFactura DESC;
-        `);
-    } else {
-      const result = await pool
-      .request()
-      .query(`
+      sqlQuery = `
+        -- Tu consulta SQL cuando bodega es igual a 3
         WITH CTE AS (
-    SELECT
-        CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
-        d.nit AS Nit_Cedula,
-        e.nombres,
-        COALESCE(
-            NULLIF(e.telefono_1, ''),
-            NULLIF(e.celular, ''),
-            NULLIF(e.telefono_2, ''),
-            NULLIF(e.celular2, '')
-        ) AS Telefono,
-        ISNULL(e.mail, '') AS Email,
-        b.serie AS Vin,
-        ISNULL(b.placa, '') AS Placa,
-        b.modelo_ano AS Ano_modelo,
-        b.des_marca AS Marca,
-        b.des_modelo AS Version_DescipcionModelo,
-        CONVERT(CHAR(10),  e.fecha_cumple_ter, 120) AS Fecha_Cumpleanos,
-        ROW_NUMBER() OVER(PARTITION BY d.nit ORDER BY h.fecha DESC) AS RowNum
-    FROM
-        dbo.v_vh_vehiculos AS b
-        LEFT OUTER JOIN dbo.vh_familias AS c ON b.familia = c.familia
-        LEFT OUTER JOIN dbo.vh_documentos_ped AS d ON b.codigo = d.codigo
-        LEFT OUTER JOIN dbo.terceros AS e ON d.nit = e.nit
-        LEFT OUTER JOIN dbo.terceros_nombres AS f ON e.nit = f.nit
-        LEFT OUTER JOIN dbo.terceros AS g ON d.vendedor = g.nit
-        LEFT OUTER JOIN dbo.v_documentos_valores_otras_marcas AS h ON d.codigo = h.codigo
-            AND d.plan_venta = 1
-        LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
-    WHERE
-        h.bodega = ${bodega}
-)
-SELECT
-    FechaFactura,
-    Nit_Cedula,
-    nombres,
-    Telefono,
-    Email,
-    Vin,
-    Placa,
-    Ano_modelo,
-    Marca,
-    Version_DescipcionModelo,
-    Fecha_Cumpleanos
-FROM CTE
-WHERE RowNum = 1
-ORDER BY FechaFactura DESC;
-`);
+          SELECT
+              CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
+              d.nit AS Nit_Cedula,
+              e.nombres,
+              COALESCE(
+                  NULLIF(e.telefono_1, ''),
+                  NULLIF(e.celular, ''),
+                  NULLIF(e.telefono_2, ''),
+                  NULLIF(e.celular2, '')
+              ) AS Telefono,
+              ISNULL(e.mail, '') AS Email,
+              b.serie AS Vin,
+              ISNULL(b.placa, '') AS Placa,
+              b.modelo_ano AS Ano_modelo,
+              b.des_marca AS Marca,
+              b.des_modelo AS Version_DescipcionModelo,
+              CONVERT(CHAR(10),  e.fecha_cumple_ter, 120) AS Fecha_Cumpleanos,
+              ROW_NUMBER() OVER(PARTITION BY d.nit ORDER BY h.fecha DESC) AS RowNum
+          FROM
+              dbo.v_vh_vehiculos AS b
+              LEFT OUTER JOIN dbo.vh_familias AS c ON b.familia = c.familia
+              LEFT OUTER JOIN dbo.vh_documentos_ped AS d ON b.codigo = d.codigo
+              LEFT OUTER JOIN dbo.terceros AS e ON d.nit = e.nit
+              LEFT OUTER JOIN dbo.terceros_nombres AS f ON e.nit = f.nit
+              LEFT OUTER JOIN dbo.terceros AS g ON d.vendedor = g.nit
+              LEFT OUTER JOIN dbo.v_documentos_valores AS h ON d.codigo = h.codigo
+                  AND d.plan_venta = 1
+              LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
+          WHERE
+              h.bodega = 3
+        )
+        SELECT
+            FechaFactura,
+            Nit_Cedula,
+            nombres,
+            Telefono,
+            Email,
+            Vin,
+            Placa,
+            Ano_modelo,
+            Marca,
+            Version_DescipcionModelo,
+            Fecha_Cumpleanos
+        FROM CTE
+        WHERE RowNum = 1
+        ORDER BY FechaFactura DESC;
+      `;
+    } else {
+      sqlQuery = `
+        -- Tu consulta SQL cuando bodega no es igual a 3
+        WITH CTE AS (
+          SELECT
+              CONVERT(CHAR(10), h.fecha, 120) AS FechaFactura,
+              d.nit AS Nit_Cedula,
+              e.nombres,
+              COALESCE(
+                  NULLIF(e.telefono_1, ''),
+                  NULLIF(e.celular, ''),
+                  NULLIF(e.telefono_2, ''),
+                  NULLIF(e.celular2, '')
+              ) AS Telefono,
+              ISNULL(e.mail, '') AS Email,
+              b.serie AS Vin,
+              ISNULL(b.placa, '') AS Placa,
+              b.modelo_ano AS Ano_modelo,
+              b.des_marca AS Marca,
+              b.des_modelo AS Version_DescipcionModelo,
+              CONVERT(CHAR(10),  e.fecha_cumple_ter, 120) AS Fecha_Cumpleanos,
+              ROW_NUMBER() OVER(PARTITION BY d.nit ORDER BY h.fecha DESC) AS RowNum
+          FROM
+              dbo.v_vh_vehiculos AS b
+              LEFT OUTER JOIN dbo.vh_familias AS c ON b.familia = c.familia
+              LEFT OUTER JOIN dbo.vh_documentos_ped AS d ON b.codigo = d.codigo
+              LEFT OUTER JOIN dbo.terceros AS e ON d.nit = e.nit
+              LEFT OUTER JOIN dbo.terceros_nombres AS f ON e.nit = f.nit
+              LEFT OUTER JOIN dbo.terceros AS g ON d.vendedor = g.nit
+              LEFT OUTER JOIN dbo.v_documentos_valores_otras_marcas AS h ON d.codigo = h.codigo
+                  AND d.plan_venta = 1
+              LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
+          WHERE
+              h.bodega = ${bodega}
+        )
+        SELECT
+            FechaFactura,
+            Nit_Cedula,
+            nombres,
+            Telefono,
+            Email,
+            Vin,
+            Placa,
+            Ano_modelo,
+            Marca,
+            Version_DescipcionModelo,
+            Fecha_Cumpleanos
+        FROM CTE
+        WHERE RowNum = 1
+        ORDER BY FechaFactura DESC;
+      `;
     }
- 
+
+    const result = await request.query(sqlQuery);
     res.status(200).json(result.recordset);
   } catch (error) {
-   res.status(500).json(error);
+    console.error(error);
+    res.status(500).json({ error: 'Ocurrió un error en el servidor.' });
   }
 };
+
 
 export const getTall = async (req, res) => {
   const pool = await getConection();
