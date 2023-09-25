@@ -6,7 +6,7 @@ export const getNuevos = async (req, res) => {
   let { bodega } = req.body;
   console.log(bodega);
   try {
-    if (bodega =='3') {
+    if (bodega === '3') {
        const result = await pool
         .request()
         .query(`
