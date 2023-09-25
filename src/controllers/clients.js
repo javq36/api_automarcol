@@ -4,7 +4,7 @@ export const getNuevos = async (req, res) => {
   const pool = await getConection();
   
   let { bodega } = req.body;
-  
+  console.log(bodega);
   try {
     if (bodega === 3) {
        const result = await pool
