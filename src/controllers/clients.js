@@ -134,7 +134,7 @@ export const getTall = async (req, res) => {
     SELECT
         CONVERT(varchar, v.fecha_facturacion, 103) as FechaFactura,
         v.nit_cliente AS NIT,
-        RTRIM(v.razon) AS RazonIngreso,
+        RTRIM(v.descripcion_operacion) AS RazonIngreso,
         ISNULL(tc.nombres, 'no tiene') AS NombresCliente,
         COALESCE(
             NULLIF(v.telefono_1, ''),
