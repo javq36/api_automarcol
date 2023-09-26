@@ -45,6 +45,7 @@ export const getNuevos = async (req, res) => {
         )
         SELECT
             FechaFactura,
+            
             Nit_Cedula,
             nombres,
             Telefono,
@@ -163,6 +164,7 @@ export const getTall = async (req, res) => {
 SELECT
     FechaFactura,
     NIT,
+    RazonIngreso,
     NombresCliente,
     Telefono,
     Email,
