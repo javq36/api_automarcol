@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { getClients, getClientsById, getClientCarInfo , getDocumentsTerceros , getMantenimientos, getTall , getNuevos } from "../controllers/";
+import { getClients, getClientsById, getClientCarInfo , getDocumentsTerceros , getMantenimientos, getTall , getNuevos, getimotriz} from "../controllers/";
 import { validarCampos } from "../middlewares/";
 import { check } from "express-validator";
 
 export const clientRoute = Router();
 
-
+clientRoute.get("/imotriz", getimotriz);
 clientRoute.get("/mantenimientos", getMantenimientos);
 clientRoute.post("/1105", getDocumentsTerceros);
 clientRoute.post("/getTall", getTall);
