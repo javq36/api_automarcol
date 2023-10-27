@@ -199,12 +199,9 @@ export const getimotriz = async (req, res) => {
     const result = await pool
       .request()
       .query(`Select * from iMotriz`);
-
     res.status(200).json(result.recordset);
-    console.log('ok');
   } catch (error) {
     res.status(500).json(error);
-     console.log('error');
   }
 };
 export const getMantenimientos = async (req, res) => {
