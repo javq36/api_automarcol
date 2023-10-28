@@ -143,8 +143,8 @@ export const getPeugeotRepAll = async (req, res) => {
         };
       });
 
-      let result = paginateAll(pricedReps, 20);
-      return res.status(200).json(result);
+
+      return res.status(200).json(pricedReps);
     }
     /*  if everything else fails, return a 404 error. */
     return res.status(404).json({ message: "operation failed" });
