@@ -301,7 +301,6 @@ export const getFcaVta = async (req, res) => {
     LEFT OUTER JOIN dbo.terceros AS q ON d.nit_prenda = q.nit
   WHERE
     (h.bodega in(12))
-    AND v.tipo_num_fac  not like '%FTI%'
     AND (h.fecha BETWEEN '${initialDate
       .toISOString()
       .slice(0, 10)} 00:00:00.000' AND '${finalDate
