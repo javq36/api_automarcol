@@ -156,8 +156,8 @@ export const getTall = async (req, res) => {
         LEFT OUTER JOIN dbo.terceros AS tc ON tc.nit = v.nit_cliente
     WHERE
         v.bodega = ${bodega}
-        AND YEAR(v.fecha_facturacion) >= 2015
-        AND v.clase_operacion = 'T'
+        AND YEAR(v.fecha_facturacion) >= 2001
+        AND v.clase_operacion in('T','O','G')
         AND v.tipo_num_fac NOT LIKE '%FTI%'
         AND v.sw = 1
 )
