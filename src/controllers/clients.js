@@ -157,7 +157,7 @@ export const getTall = async (req, res) => {
     WHERE
         v.bodega = ${bodega}
         AND YEAR(v.fecha_facturacion) >= 2000
-        AND v.clase_operacion = in('T','G','O')
+        AND v.clase_operacion in ('T','G','O')
         AND v.tipo_num_fac NOT LIKE '%FTI%'
         AND v.sw = 1
 )
