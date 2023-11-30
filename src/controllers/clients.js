@@ -259,7 +259,6 @@ export const getMostradorEncuestas = async (req, res) => {
     /* A query to the database. */
     const result = await pool
       .request()
-      .input('nit', nit)
       .query(`
              SELECT DISTINCT
               CONVERT(varchar, z.fecha, 103) AS FechaFactura, 
