@@ -281,11 +281,10 @@ export const getMostradorEncuestas = async (req, res) => {
           (z.nit <> 900531238) 
           AND (z.tipo like '%FVM%') 
           AND d.anulado = 0
-          AND (
-            (YEAR(z.fecha) >= ${initialYear} AND YEAR(z.fecha) <= ${finalYear})
-            OR (YEAR(z.fecha) = ${initialYear} AND MONTH(z.fecha) >= ${initialMonth})
-            OR (YEAR(z.fecha) = ${finalYear} AND MONTH(z.fecha) <= ${finalMonth})
-          )
+          AND YEAR(d.fecha) >= ${initialYear}
+          AND YEAR(d.fecha) <= ${finalYear} 
+          AND MONTH(d.fecha) >= ${initialMonth} 
+		      AND MONTH(d.fecha) <= ${finalMonth}
       `);
 
     res.status(200).json(result.recordset);
