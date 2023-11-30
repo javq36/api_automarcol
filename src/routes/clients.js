@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getClients, getClientsById, getClientCarInfo , getDocumentsTerceros , getMantenimientos, getTall , getNuevos, getimotriz} from "../controllers/";
+import { getClients, getClientsById, getClientCarInfo , getDocumentsTerceros , getMantenimientos, getTall , getNuevos, getimotriz , getMostradorEncuestas } from "../controllers/";
 import { validarCampos } from "../middlewares/";
 import { check } from "express-validator";
 
@@ -11,7 +11,7 @@ clientRoute.post("/1105", getDocumentsTerceros);
 clientRoute.post("/getTall", getTall);
 clientRoute.post("/getNuevos", getNuevos);
 clientRoute.get("/", getClients);
-
+clientRoute.post("/getMostrador",getMostradorEncuestas);
 clientRoute.post(
   "/id",
   [
