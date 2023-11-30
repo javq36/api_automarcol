@@ -265,7 +265,7 @@ export const getMostradorEncuestas = async (req, res) => {
               CONVERT(varchar, z.fecha, 103) AS FechaFactura, 
               z.tipo + '-' + CONVERT(varchar(15), z.numero) AS Factura,
               z.nit AS NIT_Cedula, 
-        	  te.nombres as NombreCliente, 
+        	  te.nombres as Cliente, 
               te.direccion, ISNULL(te.telefono_1, '') AS Telefono, 
               ISNULL(te.celular, '') AS Celular, 
               ISNULL(te.mail, '') AS Email
