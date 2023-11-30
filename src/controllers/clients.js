@@ -269,7 +269,8 @@ export const getMostradorEncuestas = async (req, res) => {
               te.direccion, ISNULL(te.telefono_1, '') AS Telefono, 
               ISNULL(te.celular, '') AS Celular, 
               ISNULL(te.mail, '') AS Email
-          FROM            dbo.z_vta_repuestos AS z LEFT OUTER JOIN
+          FROM            
+              dbo.z_vta_repuestos AS z LEFT OUTER JOIN
               dbo.documentos AS d ON z.tipo = d.tipo AND z.numero = d.numero LEFT OUTER JOIN
               dbo.referencias AS r ON z.codigo = r.codigo LEFT OUTER JOIN
               dbo.terceros AS t ON z.vendedor = t.nit LEFT OUTER JOIN
@@ -281,9 +282,9 @@ export const getMostradorEncuestas = async (req, res) => {
           AND (z.tipo like '%FVM%') 
           AND d.anulado = 0
           AND (
-            (YEAR(d.fecha) >= ${initialYear} AND YEAR(d.fecha) <= ${finalYear})
-            OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth})
-            OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) <= ${finalMonth})
+            (YEAR(z.fecha) >= ${initialYear} AND YEAR(z.fecha) <= ${finalYear})
+            OR (YEAR(z.fecha) = ${initialYear} AND MONTH(z.fecha) >= ${initialMonth})
+            OR (YEAR(z.fecha) = ${finalYear} AND MONTH(z.fecha) <= ${finalMonth})
           )
       `);
 
