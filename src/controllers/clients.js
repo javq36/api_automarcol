@@ -260,30 +260,23 @@ export const getMostradorEncuestas = async (req, res) => {
     const result = await pool
       .request()
       .query(`
-             SELECT DISTINCT
-              CONVERT(varchar, z.fecha, 103) AS FechaFactura, 
-              z.tipo + '-' + CONVERT(varchar(15), z.numero) AS Factura,
-              z.nit AS NIT_Cedula, 
-        	  te.nombres as Cliente, 
-              te.direccion, ISNULL(te.telefono_1, '') AS Telefono, 
-              ISNULL(te.celular, '') AS Celular, 
-              ISNULL(te.mail, '') AS Email
-          FROM            
-              dbo.z_vta_repuestos AS z LEFT OUTER JOIN
-              dbo.documentos AS d ON z.tipo = d.tipo AND z.numero = d.numero LEFT OUTER JOIN
-              dbo.referencias AS r ON z.codigo = r.codigo LEFT OUTER JOIN
-              dbo.terceros AS t ON z.vendedor = t.nit LEFT OUTER JOIN
-              dbo.terceros AS te ON te.nit = z.nit LEFT OUTER JOIN
-              dbo.terceros_nombres AS tn ON te.nit = tn.nit LEFT OUTER JOIN
-              dbo.Crmv_terceros_medio_contacto AS cr ON te.id = cr.IdTerceros
-          WHERE 
-          (z.nit <> 900531238) 
-          AND (z.tipo like '%FVM%') 
-          AND d.anulado = 0
-          AND YEAR(d.fecha) >= ${initialYear}
-          AND YEAR(d.fecha) <= ${finalYear} 
-          AND MONTH(d.fecha) >= ${initialMonth} 
-		      AND MONTH(d.fecha) <= ${finalMonth}
+        select 
+	dc.tipo,
+	dc.numero,
+	dc.nit,
+	dc.fecha,
+	UPPER(tc.nombres),
+	UPPER(tc.mail)
+	from documentos dc
+	left join terceros tc on dc.nit = tc.nit 
+	where
+	dc.sw = 1
+	and tipo not like '%FTI%'
+	and YEAR(dc.fecha) = ${finalYear}
+	and MONTH(dc.fecha) = ${finalMonth}
+	and dc.anulado = 0
+	and tc.mail IS NOT NULL
+	and tc.mail LIKE '%_@__%.__%';
       `);
 
     res.status(200).json(result.recordset);
