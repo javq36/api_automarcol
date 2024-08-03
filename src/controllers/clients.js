@@ -344,7 +344,48 @@ export const getRecibosCaja = async (req, res) => {
     res.status(500).json(error);
   }
 };
+export const getRecibosCaja_U = async (req, res) => {
+  /* Getting the connection to the database. */
+  const pool = await getConection();
+  let { numero } = req.body;
 
+  try {
+    /* A query to the database. */
+    const result = await pool
+      .request()
+      .query(`
+	SELECT DISTINCT 
+	d.tipo,
+	d.numero,
+	d.nit,
+	UPPER(tc.nombres) as nombres,
+	tc.mail,
+	tc.direccion,
+	tc.celular,
+	d.fecha_hora,
+	d.valor_total,
+	d.anulado,
+	d.usuario,
+	dc.tipo_aplica,
+	dc.numero_aplica,
+	dc.valor as valor_aplica,
+	dc.descuento as descuento_aplica,
+	dc.retencion as retencion_aplica,
+	dc.retencion_iva as retencion_iva_aplica
+	FROM documentos as d
+	LEFT JOIN terceros as tc on tc.nit = d.nit
+	LEFT JOIN documentos_cruce dc on dc.tipo = d.tipo and dc.numero = d.numero
+	 WHERE d.tipo = 'RC' 
+      AND d. numero = ${numero}
+      AND d.anulado = 0
+      AND tc.mail IS NOT NULL
+      AND tc.mail LIKE '%_@__%.__%';
+      `);
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 export const getRecibosCaja_C = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
