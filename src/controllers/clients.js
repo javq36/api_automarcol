@@ -346,8 +346,7 @@ export const getRecibosCaja_C = async (req, res) => {
        SELECT m.tipo, m.numero, m.seq, m.fec, datepart(year, m.fec) AS ano,datepart(month, m.fec) AS mes, m.cuenta, m.centro AS Cen,c.descripcion,Debito = CASE WHEN m.valor < 0 THEN 0 ELSE m.valor END,Credito = CASE WHEN m.valor > 0 THEN 0 ELSE m.valor * - 1 END,Debito_Niif = CASE WHEN m.valor_niif < 0 THEN 0 ELSE m.valor_niif END,Credito_Niif = CASE WHEN m.valor_niif > 0 THEN 0 ELSE m.valor_niif * - 1 END, Norma = c.norma, t.nombres AS Tercero, m.base, m.explicacion, m.nit,m.documento FROM movimiento m Join cuentas c On m.cuenta=c.cuenta Join terceros t On m.nit=t.nit 
 	WHERE m.tipo='RC' 
 	And m.numero=${numero} 
-	order by m.seq
-	';
+	order by m.seq;
       `);
     res.status(200).json(result.recordset);
   } catch (error) {
