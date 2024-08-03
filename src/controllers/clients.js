@@ -329,15 +329,15 @@ export const getRecibosCaja = async (req, res) => {
 	FROM documentos as d
 	LEFT JOIN terceros as tc on tc.nit = d.nit
 	LEFT JOIN documentos_cruce dc on dc.tipo = d.tipo and dc.numero = d.numero
-	WHERE d.tipo = 'RC' 
-	AND d.anulado = 0
-	AND (
-            (YEAR(d.fecha) >= ${initialYear} AND YEAR(d.fecha) <= ${finalYear})
-            OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth})
-            OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) <= ${finalMonth})
-        )
-	and tc.mail IS NOT NULL
-	and tc.mail LIKE '%_@__%.__%';
+	 WHERE d.tipo = 'RC' 
+      AND d.anulado = 0
+      AND (
+          (YEAR(d.fecha) BETWEEN ${initialYear} AND ${finalYear})
+          OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth})
+          OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) <= ${finalMonth})
+      )
+      AND tc.mail IS NOT NULL
+      AND tc.mail LIKE '%_@__%.__%';
       `);
     res.status(200).json(result.recordset);
   } catch (error) {
