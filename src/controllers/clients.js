@@ -308,22 +308,34 @@ export const getRecibosCaja = async (req, res) => {
     const result = await pool
       .request()
       .query(`
-        SELECT DISTINCT 
+	SELECT DISTINCT 
 	d.tipo,
 	d.numero,
 	d.nit,
 	UPPER(tc.nombres) as nombres,
 	tc.mail,
+	tc.direccion,
+	tc.celular,
 	d.fecha_hora,
 	d.valor_total,
 	d.anulado,
-	d.usuario 
+	d.usuario,
+	dc.tipo_aplica,
+	dc.numero_aplica,
+	dc.valor as valor_aplica,
+	dc.descuento as descuento_aplica,
+	dc.retencion as retencion_aplica,
+	dc.retencion_iva as retencion_iva_aplica
 	FROM documentos as d
 	LEFT JOIN terceros as tc on tc.nit = d.nit
+	LEFT JOIN documentos_cruce dc on dc.tipo = d.tipo and dc.numero = d.numero
 	WHERE d.tipo = 'RC' 
 	AND d.anulado = 0
-	and YEAR(d.fecha) = ${finalYear}
-	and MONTH(d.fecha) = ${finalMonth}
+	AND (
+            (YEAR(d.fecha) >= ${initialYear} AND YEAR(d.fecha) <= ${finalYear})
+            OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth})
+            OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) <= ${finalMonth})
+        )
 	and tc.mail IS NOT NULL
 	and tc.mail LIKE '%_@__%.__%';
       `);
