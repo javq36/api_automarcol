@@ -298,7 +298,40 @@ export const getMostradorEncuestas = async (req, res) => {
     res.status(500).json(error);
   }
 };
+export const getRecibosCaja = async (req, res) => {
+  /* Getting the connection to the database. */
+  const pool = await getConection();
+  let { initialMonth, finalMonth, initialYear, finalYear } = req.body;
 
+  try {
+    /* A query to the database. */
+    const result = await pool
+      .request()
+      .query(`
+        SELECT DISTINCT 
+	d.tipo,
+	d.numero,
+	d.nit,
+	UPPER(tc.nombres) as nombres,
+	tc.mail,
+	d.fecha_hora,
+	d.valor_total,
+	d.anulado,
+	d.usuario 
+	FROM documentos as d
+	LEFT JOIN terceros as tc on tc.nit = d.nit
+	WHERE d.tipo = 'RC' 
+	AND d.anulado = 0
+	and YEAR(d.fecha) = ${finalYear}
+	and MONTH(d.fecha) = ${finalMonth}
+	and tc.mail IS NOT NULL
+	and tc.mail LIKE '%_@__%.__%';
+      `);
+    res.status(200).json(result.recordset);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 
 
 export const getClients = async (req, res) => {
