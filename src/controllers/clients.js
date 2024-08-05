@@ -335,7 +335,7 @@ export const getRecibosCaja = async (req, res) => {
             (YEAR(d.fecha) >= ${initialYear} 
              OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth}) 
              OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) = ${initialMonth} AND DAY(d.fecha) >= ${initialDay}))
-            AND 
+            OR 
             (YEAR(d.fecha) >= ${finalYear} 
              OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) <= ${finalMonth}) 
              OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) = ${finalMonth} AND DAY(d.fecha) <= ${finalDay}))
