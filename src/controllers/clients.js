@@ -301,7 +301,7 @@ export const getMostradorEncuestas = async (req, res) => {
 export const getRecibosCaja = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
-  let { initialMonth, finalMonth, initialYear, finalYear } = req.body;
+  let { initialMonth, finalMonth, initialYear, finalYear, initialDay } = req.body;
 
   try {
     /* A query to the database. */
@@ -330,16 +330,10 @@ export const getRecibosCaja = async (req, res) => {
 	LEFT JOIN terceros as tc on tc.nit = d.nit
 	LEFT JOIN documentos_cruce dc on dc.tipo = d.tipo and dc.numero = d.numero
 	 WHERE d.tipo = 'RC' 
-      AND d.anulado = 0
-	AND (
-            (YEAR(d.fecha) >= ${initialYear} 
-             OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth}) 
-             OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) = ${initialMonth} AND DAY(d.fecha) >= ${initialDay}))
-            OR 
-            (YEAR(d.fecha) >= ${finalYear} 
-             OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) <= ${finalMonth}) 
-             OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) = ${finalMonth} AND DAY(d.fecha) <= ${finalDay}))
-          )
+        AND d.anulado = 0
+	AND YEAR(d.fecha) = ${initialYear} 
+	AND MONTH(d.fecha) = ${initialMonth} 
+	AND DAY(d.fecha) >= ${initialDay}
       AND tc.mail IS NOT NULL
       AND tc.mail LIKE '%_@__%.__%';
       `);
