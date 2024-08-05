@@ -331,8 +331,8 @@ export const getRecibosCaja = async (req, res) => {
 	LEFT JOIN documentos_cruce dc on dc.tipo = d.tipo and dc.numero = d.numero
 	 WHERE d.tipo = 'RC' 
       AND d.anulado = 0
-      AND d.fecha >= '${initialYear}-${initialMonth.padStart(2, '0')}-${initialDay.padStart(2, '0')}T00:00:00.000'
-      AND d.fecha <= '${finalYear}-${finalMonth.padStart(2, '0')}-${finalDay.padStart(2, '0')}T23:59:59.999'
+	and YEAR(d.fecha) = ${finalYear}
+        and MONTH(d.fecha) = ${finalMonth}
       AND tc.mail IS NOT NULL
       AND tc.mail LIKE '%_@__%.__%';
       `);
