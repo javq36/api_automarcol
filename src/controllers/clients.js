@@ -332,9 +332,13 @@ export const getRecibosCaja = async (req, res) => {
 	 WHERE d.tipo = 'RC' 
       AND d.anulado = 0
 	AND (
-            (YEAR(d.fecha) >= ${initialYear} AND YEAR(d.fecha) <= ${finalYear})
-            AND (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth})
-            AND (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) <= ${finalMonth})
+            (YEAR(d.fecha) > ${initialYear} 
+             OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) > ${initialMonth}) 
+             OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) = ${initialMonth} AND DAY(d.fecha) >= ${initialDay}))
+            AND 
+            (YEAR(d.fecha) < ${finalYear} 
+             OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) < ${finalMonth}) 
+             OR (YEAR(d.fecha) = ${finalYear} AND MONTH(d.fecha) = ${finalMonth} AND DAY(d.fecha) <= ${finalDay}))
           )
       AND tc.mail IS NOT NULL
       AND tc.mail LIKE '%_@__%.__%';
