@@ -5,3 +5,4 @@ export * from './ford';
 export * from './foton';
 export * from './image-model';
 export * from './peugeot';
+export * from './general';
