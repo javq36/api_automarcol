@@ -24,5 +24,5 @@ app.use('/api/ford', routes.fordRoute)
 app.use('/api/foton', routes.fotonRoute)
 app.use('/api/peugeot', routes.peugeotRoute)
 app.use('/api/image', routes.imageRoute)
-
+app.use('/api/general', routes.generalRoute)
 export default app;
