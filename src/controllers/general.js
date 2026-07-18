@@ -58,7 +58,12 @@ export const getApiCartera = async (req, res) => {
     ) d
     WHERE a.TipoCartera = 'Vehículos'
       AND a.Factura != 'FVN-2484'
-    ORDER BY ym ASC;
+ ORDER BY
+    b.Marca,
+    YEAR(b.fechafactura),
+    MONTH(b.fechafactura),
+    b.fechafactura,
+    a.Factura;
       `);
     if (!!CONQ) {
       return res.status(200).json(CONQ.recordset);
