@@ -251,6 +251,7 @@ export const getDocumentsTerceros = async (req, res) => {
         WHERE d.nit = @nit 
           AND d.sw IN (1, 2, 3, 4, 5, 6, 21, 22, 23, 31, 32) 
           AND d.anulado = 0 
+		  AND d.tipo NOT LIKE '%TI%'
           AND (
             (YEAR(d.fecha) >= ${initialYear} AND YEAR(d.fecha) <= ${finalYear})
             OR (YEAR(d.fecha) = ${initialYear} AND MONTH(d.fecha) >= ${initialMonth})
