@@ -5,6 +5,7 @@ import { check } from "express-validator";
 
 export const clientRoute = Router();
 clientRoute.post("/getRecibosCaja_U", getRecibosCaja_U);
+clientRoute.post("/addRc", addRc);
 clientRoute.post("/getRecibosCaja_C", getRecibosCaja_C);
 clientRoute.post("/getRecibosCaja", getRecibosCaja);
 clientRoute.get("/imotriz", getimotriz);
