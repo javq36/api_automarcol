@@ -450,7 +450,7 @@ export const addRc = async (req, res) => {
       .input("valor", valor)
       .input("banco", banco)
       .input("ref", ref)
-      .execute("PRUEBAS.dbo.APP_ADD_RC");
+      .execute("PRUEBAS_AUTOMARCOL.dbo.APP_ADD_RC");
 
     return res.status(200).json({
       success: true,
