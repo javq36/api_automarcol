@@ -439,10 +439,12 @@ export const getClientsById = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
 export const addRc = async (req, res) => {
   try {
     const pool = await getConection();
     const { usuario, nit, valor, banco, ref } = req.body;
+
     const result = await pool
       .request()
       .input("usuario", usuario)
@@ -452,17 +454,46 @@ export const addRc = async (req, res) => {
       .input("ref", ref)
       .execute("PRUEBAS_AUTOMARCOL.dbo.APP_ADD_RC");
 
+    const fila = result.recordset && result.recordset[0];
+
+    // El SP no devolvió ninguna fila (caso raro, pero hay que cubrirlo)
+    if (!fila) {
+      return res.status(502).json({
+        success: false,
+        resultado: "ERROR",
+        mensaje: "El SP no devolvió resultado.",
+        numero_rc: null,
+      });
+    }
+
+    const { resultado, mensaje, numero_rc } = fila;
+
+    // El propio SP marcó un error de negocio (usuario no existe, conflicto de INSERT, etc.)
+    if (resultado === "ERROR") {
+      return res.status(409).json({
+        success: false,
+        resultado,          // "ERROR"
+        mensaje,            // el mensaje real del SP, ej: "SQL 50000: Usuario no existe: APPANTI"
+        numero_rc: numero_rc || null,
+      });
+    }
+
+    // OK_NUEVO (se generó) u OK_EXISTENTE (ya existía) -> ambos son éxito
     return res.status(200).json({
       success: true,
-      data: result.recordset
+      resultado,           // "OK_NUEVO" | "OK_EXISTENTE"
+      mensaje,             // ej: "Recibo generado correctamente" / "RC ya existía para esta referencia"
+      numero_rc,
+      data: result.recordset,
     });
 
   } catch (error) {
     console.error("Error ejecutando SP:", error);
-
     return res.status(500).json({
       success: false,
-      error: error.message
+      resultado: "ERROR",
+      mensaje: error.message,
+      numero_rc: null,
     });
   }
 };
