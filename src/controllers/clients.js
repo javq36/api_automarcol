@@ -439,6 +439,34 @@ export const getClientsById = async (req, res) => {
     res.status(500).json(error);
   }
 };
+export const addRc = async (req, res) => {
+  try {
+    const pool = await getConection();
+    const { usuario, nit, valor, banco, ref } = req.body;
+    const result = await pool
+      .request()
+      .input("usuario", usuario)
+      .input("nit", nit)
+      .input("valor", valor)
+      .input("banco", banco)
+      .input("ref", ref)
+      .execute("PRUEBAS.dbo.APP_ADD_RC");
+
+    return res.status(200).json({
+      success: true,
+      data: result.recordset
+    });
+
+  } catch (error) {
+    console.error("Error ejecutando SP:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
 
 /* Method that search in all databases(Sales & Services) the client by plate. */
 export const getClientCarInfo = async (req, res) => {
