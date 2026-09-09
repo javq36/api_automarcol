@@ -454,9 +454,17 @@ export const addRc = async (req, res) => {
       .input("ref", ref)
       .execute("PRUEBAS_AUTOMARCOL.dbo.APP_ADD_RC");
 
-    const fila = result.recordset && result.recordset[0];
+    let fila = null;
+    for (const rs of result.recordsets || []) {
+      if (Array.isArray(rs) && rs.length > 0) {
+        const claves = Object.keys(rs[0]).map(k => k.toLowerCase());
+        if (claves.includes('resultado')) {
+          fila = rs[0];
+          break;
+        }
+      }
+    }
 
-    // El SP no devolvió ninguna fila (caso raro, pero hay que cubrirlo)
     if (!fila) {
       return res.status(502).json({
         success: false,
@@ -466,26 +474,18 @@ export const addRc = async (req, res) => {
       });
     }
 
-    const { resultado, mensaje, numero_rc } = fila;
+    const norm = {};
+    for (const key of Object.keys(fila)) norm[key.toLowerCase()] = fila[key];
 
-    // El propio SP marcó un error de negocio (usuario no existe, conflicto de INSERT, etc.)
+    const resultado = norm['resultado'];
+    const mensaje   = norm['mensaje'];
+    const numero_rc = norm['numero_rc'] ?? null;
+
     if (resultado === "ERROR") {
-      return res.status(409).json({
-        success: false,
-        resultado,          // "ERROR"
-        mensaje,            // el mensaje real del SP, ej: "SQL 50000: Usuario no existe: APPANTI"
-        numero_rc: numero_rc || null,
-      });
+      return res.status(409).json({ success: false, resultado, mensaje, numero_rc });
     }
 
-    // OK_NUEVO (se generó) u OK_EXISTENTE (ya existía) -> ambos son éxito
-    return res.status(200).json({
-      success: true,
-      resultado,           // "OK_NUEVO" | "OK_EXISTENTE"
-      mensaje,             // ej: "Recibo generado correctamente" / "RC ya existía para esta referencia"
-      numero_rc,
-      data: result.recordset,
-    });
+    return res.status(200).json({ success: true, resultado, mensaje, numero_rc, data: result.recordset });
 
   } catch (error) {
     console.error("Error ejecutando SP:", error);
