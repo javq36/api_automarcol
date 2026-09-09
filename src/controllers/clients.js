@@ -443,7 +443,7 @@ export const getClientsById = async (req, res) => {
 export const addRc = async (req, res) => {
   try {
     const pool = await getConection();
-    const { usuario, nit, valor, banco, ref } = req.body;
+    const { usuario, nit, valor, banco, ref, cancelado } = req.body;
 
     const result = await pool
       .request()
@@ -452,6 +452,7 @@ export const addRc = async (req, res) => {
       .input("valor", valor)
       .input("banco", banco)
       .input("ref", ref)
+	  .input("cancelado", cancelado)
       .execute("PRUEBAS_AUTOMARCOL.dbo.APP_ADD_RC");
 
     let fila = null;
