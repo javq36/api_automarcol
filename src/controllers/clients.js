@@ -453,7 +453,7 @@ export const addRc = async (req, res) => {
       .input("banco", banco)
       .input("ref", ref)
 	  .input("cancelado", cancelado)
-      .execute("PRUEBAS_AUTOMARCOL.dbo.APP_ADD_RC");
+      .execute("AUTOMARCOL.dbo.APP_ADD_RC");
 
     let fila = null;
     for (const rs of result.recordsets || []) {
