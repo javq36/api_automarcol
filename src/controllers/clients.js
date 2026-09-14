@@ -439,7 +439,70 @@ export const getClientsById = async (req, res) => {
     res.status(500).json(error);
   }
 };
+export const updateUbicacion = async (req, res) => {
+  try {
+    const pool = await getConection();
+    const { vin, ubicacion, documentos } = req.body;
 
+    // Validaciones básicas
+    if (!vin) {
+      return res.status(400).json({
+        success: false,
+        mensaje: "El campo 'vin' es obligatorio.",
+      });
+    }
+
+    const ubicacionesValidas = ["P/D","BODEGA", "VITRINA",  "CARROCERIA", "ENTREGADO"];
+    const documentosValidos = ["P/D", "SI", "DIGITALES"];
+
+    if (ubicacion && !ubicacionesValidas.includes(ubicacion.toUpperCase())) {
+      return res.status(400).json({
+        success: false,
+        mensaje: `Ubicacion inválida. Valores permitidos: ${ubicacionesValidas.join(", ")}`,
+      });
+    }
+
+    if (documentos && !documentosValidos.includes(documentos.toUpperCase())) {
+      return res.status(400).json({
+        success: false,
+        mensaje: `Documentos inválido. Valores permitidos: ${documentosValidos.join(", ")}`,
+      });
+    }
+
+    const result = await pool
+      .request()
+      .input("vin", vin)
+      .input("ubicacion", ubicacion ? ubicacion.toUpperCase() : null)
+      .input("documentos", documentos ? documentos.toUpperCase() : null)
+      .query(`
+        UPDATE AUTOMARCOL.dbo.API_UBICACIONES
+        SET
+          Ubicacion  = COALESCE(@ubicacion, Ubicacion),
+          Documentos = COALESCE(@documentos, Documentos)
+        WHERE Vin = @vin
+      `);
+
+    if (result.rowsAffected[0] === 0) {
+      return res.status(404).json({
+        success: false,
+        mensaje: "No se encontró ningún registro con ese VIN.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      mensaje: "Ubicación actualizada correctamente.",
+      vin,
+    });
+
+  } catch (error) {
+    console.error("Error actualizando ubicación:", error);
+    return res.status(500).json({
+      success: false,
+      mensaje: error.message,
+    });
+  }
+};
 export const addRc = async (req, res) => {
   try {
     const pool = await getConection();
