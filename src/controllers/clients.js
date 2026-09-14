@@ -439,12 +439,13 @@ export const getClientsById = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
+
 export const updateUbicacion = async (req, res) => {
   try {
     const pool = await getConection();
     const { vin, ubicacion, documentos } = req.body;
 
-    // Validaciones básicas
     if (!vin) {
       return res.status(400).json({
         success: false,
@@ -452,28 +453,32 @@ export const updateUbicacion = async (req, res) => {
       });
     }
 
-    const ubicacionesValidas = ["P/D","BODEGA", "VITRINA",  "CARROCERIA", "ENTREGADO"];
+    const ubicacionesValidas = ["P/D", "BODEGA", "VITRINA", "CARROCERIA", "ENTREGADO"];
     const documentosValidos = ["P/D", "SI", "DIGITALES"];
 
-    if (ubicacion && !ubicacionesValidas.includes(ubicacion.toUpperCase())) {
+    const ubicacionFinal  = ubicacion ? ubicacion.toUpperCase() : null;
+    const documentosFinal = documentos ? documentos.toUpperCase() : null;
+
+    if (ubicacionFinal && !ubicacionesValidas.includes(ubicacionFinal)) {
       return res.status(400).json({
         success: false,
         mensaje: `Ubicacion inválida. Valores permitidos: ${ubicacionesValidas.join(", ")}`,
       });
     }
 
-    if (documentos && !documentosValidos.includes(documentos.toUpperCase())) {
+    if (documentosFinal && !documentosValidos.includes(documentosFinal)) {
       return res.status(400).json({
         success: false,
         mensaje: `Documentos inválido. Valores permitidos: ${documentosValidos.join(", ")}`,
       });
     }
 
-    const result = await pool
+    // 1. Intentar actualizar el registro existente
+    const updateResult = await pool
       .request()
       .input("vin", vin)
-      .input("ubicacion", ubicacion ? ubicacion.toUpperCase() : null)
-      .input("documentos", documentos ? documentos.toUpperCase() : null)
+      .input("ubicacion", ubicacionFinal)
+      .input("documentos", documentosFinal)
       .query(`
         UPDATE AUTOMARCOL.dbo.API_UBICACIONES
         SET
@@ -482,17 +487,31 @@ export const updateUbicacion = async (req, res) => {
         WHERE Vin = @vin
       `);
 
-    if (result.rowsAffected[0] === 0) {
-      return res.status(404).json({
-        success: false,
-        mensaje: "No se encontró ningún registro con ese VIN.",
+    if (updateResult.rowsAffected[0] > 0) {
+      return res.status(200).json({
+        success: true,
+        mensaje: "Ubicación actualizada correctamente.",
+        vin,
+        accion: "actualizado",
       });
     }
 
-    return res.status(200).json({
+    // 2. Si no existía ninguna fila con ese VIN, se inserta
+    await pool
+      .request()
+      .input("vin", vin)
+      .input("ubicacion", ubicacionFinal || "P/D")
+      .input("documentos", documentosFinal || "P/D")
+      .query(`
+        INSERT INTO AUTOMARCOL.dbo.API_UBICACIONES (Vin, Ubicacion, Documentos)
+        VALUES (@vin, @ubicacion, @documentos)
+      `);
+
+    return res.status(201).json({
       success: true,
-      mensaje: "Ubicación actualizada correctamente.",
+      mensaje: "El VIN no existía, se creó el registro correctamente.",
       vin,
+      accion: "creado",
     });
 
   } catch (error) {
@@ -503,6 +522,7 @@ export const updateUbicacion = async (req, res) => {
     });
   }
 };
+
 export const addRc = async (req, res) => {
   try {
     const pool = await getConection();
