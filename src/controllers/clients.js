@@ -522,6 +522,27 @@ export const updateUbicacion = async (req, res) => {
     });
   }
 };
+export const getKPIS = async (req, res) => {
+  const pool = await getConection();
+
+  try {
+    const result = await pool.request().query(`
+      SELECT *
+      FROM SB_KPI
+    `);
+
+    res.status(200).json(result.recordset);
+
+  } catch (error) {
+    console.error('Error consultando KPIs:', error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Error al consultar los indicadores',
+      error: error.message
+    });
+  }
+};
 
 export const addRc = async (req, res) => {
   try {
@@ -750,3 +771,4 @@ export const getClientCarInfo = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
