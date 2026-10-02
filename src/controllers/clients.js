@@ -522,27 +522,7 @@ export const updateUbicacion = async (req, res) => {
     });
   }
 };
-export const getREFINV = async (req, res) => {
-  const pool = await getConection();
 
-  try {
-    const result = await pool.request().query(`
-      SELECT *
-      FROM REFINV_ALL
-    `);
-
-    res.status(200).json(result.recordset);
-
-  } catch (error) {
-    console.error('Error consultando inventario/REFINV:', error);
-
-    res.status(500).json({
-      success: false,
-      message: 'Error al consultar REFINV',
-      error: error.message
-    });
-  }
-};
 export const getKPIS = async (req, res) => {
   const pool = await getConection();
 
@@ -550,6 +530,28 @@ export const getKPIS = async (req, res) => {
     const result = await pool.request().query(`
       SELECT *
       FROM SB_KPI
+    `);
+
+    res.status(200).json(result.recordset);
+
+  } catch (error) {
+    console.error('Error consultando KPIs:', error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Error al consultar los indicadores',
+      error: error.message
+    });
+  }
+};
+
+export const getSB_INVENTARIO = async (req, res) => {
+  const pool = await getConection();
+
+  try {
+    const result = await pool.request().query(`
+      SELECT *
+      FROM SB_INVENTARIO
     `);
 
     res.status(200).json(result.recordset);
