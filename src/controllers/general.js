@@ -15,7 +15,20 @@ export const getApiCartera = async (req, res) => {
     res.status(500).json(error);
   }
 };
-
+export const getApiCartera_taller = async (req, res) => {
+  const pool = await getConection();
+  try {
+    const CONQ = await pool
+      .request()
+      .query(`SELECT * from API_CARTERA_TALLER`);
+    if (!!CONQ) {
+      return res.status(200).json(CONQ.recordset);
+    }
+    return res.status(404).json({ message: "operation failed" });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 export const getApiInventario = async (req, res) => {
   const pool = await getConection();
   try {
