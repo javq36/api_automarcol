@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getClients, getClientsById, getClientCarInfo , getDocumentsTerceros , getMantenimientos, getTall , getNuevos, getimotriz , getMostradorEncuestas , getRecibosCaja, getRecibosCaja_U, getRecibosCaja_C, addRc, getDistribuidor, updateUbicacion  } from "../controllers/";
+import { getKPIS, getClients, getClientsById, getClientCarInfo , getDocumentsTerceros , getMantenimientos, getTall , getNuevos, getimotriz , getMostradorEncuestas , getRecibosCaja, getRecibosCaja_U, getRecibosCaja_C, addRc, getDistribuidor, updateUbicacion  } from "../controllers/";
 import { validarCampos } from "../middlewares/";
 import { check } from "express-validator";
 
@@ -9,6 +9,7 @@ clientRoute.post("/addRc", addRc);
 clientRoute.post("/updateUbicacion", updateUbicacion);
 clientRoute.post("/getRecibosCaja_C", getRecibosCaja_C);
 clientRoute.post("/getRecibosCaja", getRecibosCaja);
+clientRoute.get("/getKPIS", getKPIS);
 clientRoute.get("/imotriz", getimotriz);
 clientRoute.get("/getDistribuidor", getDistribuidor);
 clientRoute.get("/mantenimientos", getMantenimientos);
