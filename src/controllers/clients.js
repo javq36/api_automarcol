@@ -189,20 +189,31 @@ ORDER BY FechaFactura desc
     res.status(500).json(error);
   }
 };
+
 export const getREFINV = async (req, res) => {
-  /* Getting the connection to the database. */
   const pool = await getConection();
 
   try {
-    /* A query to the database. */
-    const result = await pool
-      .request()
-      .query(`Select * from REFINV_ALL`);
+    const result = await pool.request().query(`
+      SELECT *
+      FROM REFINV_ALL
+    `);
+
     res.status(200).json(result.recordset);
+
   } catch (error) {
-    res.status(500).json(error);
+    console.error('Error consultando KPIs:', error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Error al consultar los indicadores',
+      error: error.message
+    });
   }
 };
+
+
+
 export const getimotriz = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
