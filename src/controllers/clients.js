@@ -190,30 +190,6 @@ ORDER BY FechaFactura desc
   }
 };
 
-export const getREFINV = async (req, res) => {
-  const pool = await getConection();
-
-  try {
-    const result = await pool.request().query(`
-      SELECT *
-      FROM REFINV_ALL
-    `);
-
-    res.status(200).json(result.recordset);
-
-  } catch (error) {
-    console.error('Error consultando KPIs:', error);
-
-    res.status(500).json({
-      success: false,
-      message: 'Error al consultar los indicadores',
-      error: error.message
-    });
-  }
-};
-
-
-
 export const getimotriz = async (req, res) => {
   /* Getting the connection to the database. */
   const pool = await getConection();
@@ -543,6 +519,27 @@ export const updateUbicacion = async (req, res) => {
     return res.status(500).json({
       success: false,
       mensaje: error.message,
+    });
+  }
+};
+export const getREFINV = async (req, res) => {
+  const pool = await getConection();
+
+  try {
+    const result = await pool.request().query(`
+      SELECT *
+      FROM REFINV_ALL
+    `);
+
+    res.status(200).json(result.recordset);
+
+  } catch (error) {
+    console.error('Error consultando inventario/REFINV:', error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Error al consultar REFINV',
+      error: error.message
     });
   }
 };
