@@ -58,7 +58,27 @@ export const getApiVentas = async (req, res) => {
     res.status(500).json(error);
   }
 };
+export const getREFINV_ALL = async (req, res) => {
+  try {
+    const pool = await getConection();
 
+    const result = await pool.request().query(`
+      SELECT *
+      FROM REFINV_ALL
+    `);
+
+    res.status(200).json(result.recordset);
+
+  } catch (error) {
+    console.error('Error consultando REFINV_ALL:', error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Error al consultar REFINV_ALL',
+      error: error.message
+    });
+  }
+};
 export const guardarMatricula = async (req, res) => {
   const pool = await getConection();
   const {
