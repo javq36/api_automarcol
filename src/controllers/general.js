@@ -64,7 +64,7 @@ export const getREFINV_ALL = async (req, res) => {
 
     const result = await pool.request().query(`
       SELECT *
-      FROM REFINV_ALL
+      FROM REFINV01_2025_FORD
     `);
 
     res.status(200).json(result.recordset);
