@@ -1,6 +1,20 @@
 
 import { getConection } from "../databases/conection";
 
+export const getApiFinanciero = async (req, res) => {
+  const pool = await getConection();
+  try {
+    const CONQ = await pool
+      .request()
+      .query(`SELECT * from API_FINANCIERO`);
+    if (!!CONQ) {
+      return res.status(200).json(CONQ.recordset);
+    }
+    return res.status(404).json({ message: "operation failed" });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 export const getApiCartera = async (req, res) => {
   const pool = await getConection();
   try {
