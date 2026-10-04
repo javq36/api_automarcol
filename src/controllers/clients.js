@@ -545,28 +545,6 @@ export const getKPIS = async (req, res) => {
   }
 };
 
-export const getSB_INVENTARIO = async (req, res) => {
-  const pool = await getConection();
-
-  try {
-    const result = await pool.request().query(`
-      SELECT *
-      FROM SB_INVENTARIO
-    `);
-
-    res.status(200).json(result.recordset);
-
-  } catch (error) {
-    console.error('Error consultando KPIs:', error);
-
-    res.status(500).json({
-      success: false,
-      message: 'Error al consultar los indicadores',
-      error: error.message
-    });
-  }
-};
-
 export const addRc = async (req, res) => {
   try {
     const pool = await getConection();
