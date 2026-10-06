@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getApiFinanciero, getApiCartera,getApiCartera_taller,getApiInventario,getApiVentas,guardarMatricula, getREFINV_ALL } from "../controllers";
+import { getApiFinanciero, getApiFinanciero_d,getApiCartera,getApiCartera_taller,getApiInventario,getApiVentas,guardarMatricula, getREFINV_ALL } from "../controllers";
 
 export const generalRoute = Router();
 
@@ -15,3 +15,5 @@ generalRoute.post('/PostMatriculas', guardarMatricula);
 generalRoute.get("/getREFINV_ALL", getREFINV_ALL);
 
 generalRoute.get("/getApiFinanciero", getApiFinanciero);
+
+generalRoute.get("/getApiFinanciero_d", getApiFinanciero_d);
