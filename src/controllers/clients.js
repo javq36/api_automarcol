@@ -249,7 +249,7 @@ export const getDocumentsTerceros = async (req, res) => {
         FROM documentos d WITH (INDEX = IX_documentos_nit)  
         JOIN terceros t ON d.vendedor = t.nit  
         WHERE d.nit = @nit 
-          AND d.sw IN (1, 2, 3, 4, 5, 6, 21, 22, 23, 31, 32) 
+          AND d.sw IN (1, 2, 5) 
           AND d.anulado = 0 
 		  AND d.tipo NOT LIKE '%TI%'
           AND (
