@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { getKPIS, getClients, getClientsById, getClientCarInfo , getDocumentsTerceros , getMantenimientos, getTall , getNuevos, getimotriz , getMostradorEncuestas , getRecibosCaja, getRecibosCaja_U, getRecibosCaja_C, addRc, getDistribuidor, updateUbicacion  } from "../controllers/";
+import { getKPIS, getClients, addCRU ,getClientsById, getClientCarInfo , getDocumentsTerceros , getMantenimientos, getTall , getNuevos, getimotriz , getMostradorEncuestas , getRecibosCaja, getRecibosCaja_U, getRecibosCaja_C, addRc, getDistribuidor, updateUbicacion  } from "../controllers/";
 import { validarCampos } from "../middlewares/";
 import { check } from "express-validator";
 
 export const clientRoute = Router();
 clientRoute.post("/getRecibosCaja_U", getRecibosCaja_U);
 clientRoute.post("/addRc", addRc);
+clientRoute.post("/addCRU", addCRU);
 clientRoute.post("/updateUbicacion", updateUbicacion);
 clientRoute.post("/getRecibosCaja_C", getRecibosCaja_C);
 clientRoute.post("/getRecibosCaja", getRecibosCaja);
