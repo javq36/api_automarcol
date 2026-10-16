@@ -545,10 +545,18 @@ export const getKPIS = async (req, res) => {
   }
 };
 
+
 export const addRc = async (req, res) => {
   try {
     const pool = await getConection();
     const { usuario, nit, valor, banco, ref, cancelado } = req.body;
+
+    // Si el NIT es de prueba, ejecutar en la base de datos PRUEBAS
+    const baseDatos = String(nit).trim() === "999999999"
+      ? "PRUEBAS_AUTOMARCOL"
+      : "AUTOMARCOL";
+
+    const procedimiento = `${baseDatos}.dbo.APP_ADD_RC`;
 
     const result = await pool
       .request()
@@ -557,14 +565,16 @@ export const addRc = async (req, res) => {
       .input("valor", valor)
       .input("banco", banco)
       .input("ref", ref)
-	  .input("cancelado", cancelado)
-      .execute("AUTOMARCOL.dbo.APP_ADD_RC");
+      .input("cancelado", cancelado)
+      .execute(procedimiento);
 
     let fila = null;
+
     for (const rs of result.recordsets || []) {
       if (Array.isArray(rs) && rs.length > 0) {
         const claves = Object.keys(rs[0]).map(k => k.toLowerCase());
-        if (claves.includes('resultado')) {
+
+        if (claves.includes("resultado")) {
           fila = rs[0];
           break;
         }
@@ -581,20 +591,34 @@ export const addRc = async (req, res) => {
     }
 
     const norm = {};
-    for (const key of Object.keys(fila)) norm[key.toLowerCase()] = fila[key];
-
-    const resultado = norm['resultado'];
-    const mensaje   = norm['mensaje'];
-    const numero_rc = norm['numero_rc'] ?? null;
-
-    if (resultado === "ERROR") {
-      return res.status(409).json({ success: false, resultado, mensaje, numero_rc });
+    for (const key of Object.keys(fila)) {
+      norm[key.toLowerCase()] = fila[key];
     }
 
-    return res.status(200).json({ success: true, resultado, mensaje, numero_rc, data: result.recordset });
+    const resultado = norm["resultado"];
+    const mensaje = norm["mensaje"];
+    const numero_rc = norm["numero_rc"] ?? null;
+
+    if (resultado === "ERROR") {
+      return res.status(409).json({
+        success: false,
+        resultado,
+        mensaje,
+        numero_rc,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      resultado,
+      mensaje,
+      numero_rc,
+      data: result.recordset,
+    });
 
   } catch (error) {
     console.error("Error ejecutando SP:", error);
+
     return res.status(500).json({
       success: false,
       resultado: "ERROR",
@@ -603,6 +627,7 @@ export const addRc = async (req, res) => {
     });
   }
 };
+
 
 
 /* Method that search in all databases(Sales & Services) the client by plate. */
