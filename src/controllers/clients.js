@@ -630,6 +630,154 @@ export const addRc = async (req, res) => {
 
 
 
+export const addCRU = async (req, res) => {
+  try {
+    const pool = await getConection();
+
+    const { usuario, nit, numero, cruces } = req.body;
+
+    // Validaciones básicas
+    if (!usuario || !nit || !numero || !Array.isArray(cruces)) {
+      return res.status(400).json({
+        success: false,
+        resultado: "ERROR",
+        mensaje: "Faltan usuario, nit, numero del RC o cruces.",
+      });
+    }
+
+    if (!Number.isInteger(Number(numero)) || Number(numero) <= 0) {
+      return res.status(400).json({
+        success: false,
+        resultado: "ERROR",
+        mensaje: "El número del RC no es válido.",
+      });
+    }
+
+    if (cruces.length === 0) {
+      return res.status(400).json({
+        success: false,
+        resultado: "ERROR",
+        mensaje: "Debe enviar al menos una factura para cruzar.",
+      });
+    }
+
+    // Validar y construir los elementos XML de las facturas
+    const facturasXML = [];
+
+    for (const [i, cruce] of cruces.entries()) {
+      const tipo = String(cruce.tipo_aplica ?? "").trim();
+      const factura = Number(cruce.numero_aplica);
+      const sw = Number(cruce.sw_aplica);
+      const valor = Number(cruce.valor);
+
+      if (
+        !/^[A-Za-z0-9]{1,4}$/.test(tipo) ||
+        !Number.isInteger(factura) ||
+        factura <= 0 ||
+        !Number.isInteger(sw) ||
+        sw < 1 ||
+        sw > 255 ||
+        !Number.isInteger(valor) ||
+        valor <= 0
+      ) {
+        return res.status(400).json({
+          success: false,
+          resultado: "ERROR",
+          mensaje: `Los datos del cruce ${i + 1} no son válidos.`,
+        });
+      }
+
+      facturasXML.push(
+        `<f tipo_aplica="${tipo}" numero_aplica="${factura}" sw_aplica="${sw}" valor="${valor}"/>`
+      );
+    }
+
+    const cruces_xml = `<c>${facturasXML.join("")}</c>`;
+
+    // NIT de pruebas: usar la base de datos de pruebas
+    const baseDatos = String(nit).trim() === "999999999"
+      ? "PRUEBAS_AUTOMARCOL"
+      : "AUTOMARCOL";
+
+    const procedimiento = `${baseDatos}.dbo.APP_ADD_CRU`;
+
+    const result = await pool
+      .request()
+      .input("usuario", usuario)
+      .input("nit", String(nit).trim())
+      .input("numero", Number(numero))
+      .input("cruces_xml", cruces_xml)
+      .execute(procedimiento);
+
+    // Buscar la fila que contiene el resultado del procedimiento
+    let fila = null;
+
+    for (const rs of result.recordsets || []) {
+      if (Array.isArray(rs) && rs.length > 0) {
+        const claves = Object.keys(rs[0]).map(k => k.toLowerCase());
+
+        if (claves.includes("resultado")) {
+          fila = rs[0];
+          break;
+        }
+      }
+    }
+
+    if (!fila) {
+      return res.status(502).json({
+        success: false,
+        resultado: "ERROR",
+        mensaje: "El procedimiento APP_ADD_CRU no devolvió resultado.",
+      });
+    }
+
+    // Normalizar nombres de columnas
+    const norm = {};
+
+    for (const key of Object.keys(fila)) {
+      norm[key.toLowerCase()] = fila[key];
+    }
+
+    const resultado = String(norm.resultado ?? "").trim().toUpperCase();
+    const mensaje = norm.mensaje ?? null;
+
+    if (resultado === "ERROR") {
+      return res.status(409).json({
+        success: false,
+        resultado,
+        mensaje,
+      });
+    }
+
+    if (resultado !== "OK") {
+      return res.status(502).json({
+        success: false,
+        resultado: resultado || "ERROR",
+        mensaje: mensaje ?? "El procedimiento devolvió una respuesta inesperada.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      resultado,
+      mensaje,
+      numero_rc: Number(numero),
+      facturas_cruzadas: cruces.length,
+      data: result.recordsets,
+    });
+
+  } catch (error) {
+    console.error("Error ejecutando APP_ADD_CRU:", error);
+
+    return res.status(500).json({
+      success: false,
+      resultado: "ERROR",
+      mensaje: "Error interno al ejecutar el cruce de facturas.",
+    });
+  }
+};
+
+
 /* Method that search in all databases(Sales & Services) the client by plate. */
 export const getClientCarInfo = async (req, res) => {
   /* Getting the connection to the database. */
