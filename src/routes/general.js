@@ -9,7 +9,7 @@ generalRoute.get("/getApiCartera_taller", getApiCartera_taller);
 generalRoute.get("/getApiInventario", getApiInventario);
 
 generalRoute.get("/getApiVentas", getApiVentas);
-generalRoute.get("/getApiVentasDetalle", getApiVentasDetalle);
+generalRoute.post("/getApiVentasDetalle", getApiVentasDetalle);
 
 generalRoute.get("/getApiCartera_unidas", getApiCartera_unidas);
 generalRoute.post('/PostMatriculas', guardarMatricula);
