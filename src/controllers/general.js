@@ -101,19 +101,30 @@ export const getApiVentas = async (req, res) => {
   }
 };
 export const getApiVentasDetalle = async (req, res) => {
+  const vin = String(req.body?.vin ?? "").trim().toUpperCase();
+
+  if (!/^[A-Z0-9]{5,25}$/.test(vin)) {
+    return res.status(422).json({ message: "VIN no válido" });
+  }
+
   const pool = await getConection();
   try {
     const CONQ = await pool
       .request()
-      .query(`select * from API_VENTAS_DETALLE`);
-    if (!!CONQ) {
-      return res.status(200).json(CONQ.recordset);
+      .input("Vin", vin)
+      .query(`SELECT * FROM API_VENTAS_DETALLE WHERE Vin = @Vin`);
+
+    if (CONQ.recordset.length === 0) {
+      return res.status(404).json({ message: "Vehículo no encontrado" });
     }
-    return res.status(404).json({ message: "operation failed" });
+
+    // Un VIN debe devolver un solo registro; si hay más, se entrega el primero
+    return res.status(200).json(CONQ.recordset[0]);
   } catch (error) {
     res.status(500).json(error);
   }
 };
+
 export const getREFINV_ALL = async (req, res) => {
   try {
     const pool = await getConection();
