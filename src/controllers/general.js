@@ -104,7 +104,7 @@ export const getApiVentasDetalle = async (req, res) => {
   const { Vin } = req.body;
 
   if (!Vin) {
-    return res.status(400).json({ success: false, message: 'VIN no proporcionado.' });
+    return res.status(400).json({ success: false, message: 'VIN no proporcionado. ' });
   }
 
   const pool = await getConection();
