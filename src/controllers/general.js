@@ -1,6 +1,20 @@
 
 import { getConection } from "../databases/conection";
 
+export const getApiKPIVTAS = async (req, res) => {
+  const pool = await getConection();
+  try {
+    const CONQ = await pool
+      .request()
+      .query(`SELECT * from SB_VH`);
+    if (!!CONQ) {
+      return res.status(200).json(CONQ.recordset);
+    }
+    return res.status(404).json({ message: "operation failed" });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
 export const getApiFinanciero = async (req, res) => {
   const pool = await getConection();
   try {
