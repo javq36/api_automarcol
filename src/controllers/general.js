@@ -91,7 +91,7 @@ export const getApiVentas = async (req, res) => {
   try {
     const CONQ = await pool
       .request()
-      .query(`select * from API_VENTAS`);
+      .query(`select * from API_VENTAS_DETALLE`);
     if (!!CONQ) {
       return res.status(200).json(CONQ.recordset);
     }
