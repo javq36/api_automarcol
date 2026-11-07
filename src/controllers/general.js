@@ -26,6 +26,7 @@ export const getApiTall_Operaciones = async (req, res) => {
           a.operario,
           t.nombres,
           a.fec,
+          a.bodega,
           a.numero_orden,
           a.clase_operacion,
           a.clase_trabajo,
