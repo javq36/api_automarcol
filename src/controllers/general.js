@@ -15,6 +15,52 @@ export const getApiKPIVTAS = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
+export const getApiTall_Operaciones = async (req, res) => {
+  const pool = await getConection();
+  try {
+    const CONQ = await pool
+      .request()
+      .query(`
+            SELECT
+          a.operario,
+          t.nombres,
+          a.fec,
+          a.numero_orden,
+          a.clase_operacion,
+          a.clase_trabajo,
+          a.cantidad,
+          a.operacion,
+          a.tiempo,
+          CASE
+              WHEN a.sw = 1 THEN a.cantidad * a.tiempo
+              ELSE (a.cantidad * a.tiempo) * -1
+          END AS tiempo_calculado
+      
+      FROM tall_documentos_lin a
+      
+      INNER JOIN terceros t
+          ON a.operario = t.nit
+      
+      WHERE
+          a.clase_operacion = 'T'
+          AND a.clase_trabajo IN ('C', 'G', 'A')
+          AND a.fec >= DATEADD(YEAR, -3, GETDATE())
+          AND a.fec <= GETDATE()
+      
+      ORDER BY
+          a.operario,
+          a.fec;
+      `);
+    if (!!CONQ) {
+      return res.status(200).json(CONQ.recordset);
+    }
+    return res.status(404).json({ message: "operation failed" });
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
 export const getApiPedidos = async (req, res) => {
   const pool = await getConection();
   try {
