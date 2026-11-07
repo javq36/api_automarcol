@@ -46,7 +46,7 @@ export const getApiTall_Operaciones = async (req, res) => {
       WHERE
           a.clase_operacion = 'T'
           AND a.clase_trabajo IN ('C', 'G', 'A')
-          AND a.fec >= DATEADD(YEAR, -3, GETDATE())
+          AND a.fec >= DATEADD(YEAR, -5, GETDATE())
           AND a.fec <= GETDATE()
       
       ORDER BY
