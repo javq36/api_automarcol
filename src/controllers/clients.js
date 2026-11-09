@@ -453,7 +453,7 @@ export const updateUbicacion = async (req, res) => {
       });
     }
 
-    const ubicacionesValidas = ["P/D", "BODEGA", "VITRINA", "CARROCERIA", "ENTREGADO"];
+    const ubicacionesValidas = ["P/D", "BODEGA", "VITRINA", "CARROCERIA", "ENTREGADO","DESPACHO"];
     const documentosValidos = ["P/D", "SI", "DIGITALES"];
 
     const ubicacionFinal  = ubicacion ? ubicacion.toUpperCase() : null;
