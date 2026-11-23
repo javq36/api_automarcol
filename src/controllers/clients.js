@@ -121,68 +121,53 @@ export const getNuevos = async (req, res) => {
   }
 };
 
-
 export const getTall = async (req, res) => {
   const pool = await getConection();
-  let { bodega } = req.body;
-  
+  const placa = String(req.body.placa || req.body.plate || '').trim().toUpperCase();
+
+  if (!placa) {
+    return res.status(400).json({ message: 'La placa es obligatoria' });
+  }
+
   try {
-    /* A query to the database. */
     const result = await pool
       .request()
-      .query(`WITH CTE AS (
-    SELECT
-        CONVERT(varchar, v.fecha_facturacion, 103) as FechaFactura,
-        v.nit_cliente AS NIT,
-        RTRIM(v.descripcion_operacion) AS RazonIngreso,
-        ISNULL(tc.nombres, 'no tiene') AS NombresCliente,
-        COALESCE(
-            NULLIF(v.telefono_1, ''),
-            NULLIF(v.celular_1, ''),
-            NULLIF(v.telefono_2, ''),
-            NULLIF(v.celular_2, '')
-        ) AS Telefono,
-        ISNULL(v.email, '') AS Email,
-        v.serie AS VIN,
-        ISNULL(v.placa, '') AS Placa,
-        v.ano_modelo AS AnoModelo,
-        ISNULL(v.Marca, '') AS Marca,
-        RTRIM(v.descripcion) AS DescripcionModelo,
-        ISNULL(CONVERT(varchar, v.Fecha_Cumpleanos, 103), '') AS FechaCumpleaños,
-        ROW_NUMBER() OVER (PARTITION BY v.nit_cliente ORDER BY v.fecha_facturacion DESC) AS RowNum
-    FROM
-        dbo.v_tall_detalle_simetrical AS v
-        LEFT OUTER JOIN dbo.condiciones_pago AS cp ON v.condicion = cp.condicion
-        LEFT OUTER JOIN dbo.terceros AS tc ON tc.nit = v.nit_cliente
-    WHERE
-        v.bodega = ${bodega}
-        AND YEAR(v.fecha_facturacion) >= 2000
-        AND v.clase_operacion in ('T','G','O')
-        AND v.tipo_num_fac NOT LIKE '%FTI%'
-        AND v.sw = 1
-)
-SELECT
-    FechaFactura,
-    NIT,
-    RazonIngreso,
-    NombresCliente,
-    Telefono,
-    Email,
-    VIN,
-    Placa,
-    AnoModelo,
-    Marca,
-    DescripcionModelo,
-    FechaCumpleaños
-FROM
-    CTE
-WHERE
-    RowNum = 1
-ORDER BY FechaFactura desc	
-;
-;
-
-  `);
+      .input('placa', placa)
+      .query(`
+        SELECT 
+            e.fecha,
+            dl.tipo AS tipo,
+            dl.numero AS numero,
+            e.numero AS orden,
+            e.bodega,
+            e.Kilometraje AS kilometraje,
+            e.Horas AS horas,
+            d.clase_operacion AS co,
+            d.clase_trabajo AS ct,
+            o.Nombres AS operario,
+            d.operacion,
+            ISNULL(te.descripcion, r.descripcion) AS descripcion,
+            d.cantidad,
+            d.tiempo
+        FROM referencias_imp vh WITH (NOLOCK)
+        INNER JOIN tall_encabeza_orden e WITH (NOLOCK)
+            ON e.serie = vh.codigo
+        LEFT JOIN tall_detalle_orden d WITH (NOLOCK)
+            ON d.numero = e.numero
+           AND d.bodega = e.bodega
+        LEFT JOIN tall_tempario te WITH (NOLOCK)
+            ON te.id = d.id_tall_tempario
+        LEFT JOIN tall_documentos_lin dl WITH (NOLOCK)
+            ON dl.numero_orden = d.numero
+           AND dl.seq_orden = d.seq
+        LEFT JOIN referencias r WITH (NOLOCK)
+            ON r.codigo = d.operacion
+           AND d.clase_operacion = 'R'
+        LEFT JOIN terceros o WITH (NOLOCK)
+            ON o.nit = d.operario
+        WHERE vh.placa = @placa
+        ORDER BY e.fecha DESC, e.numero, d.operacion;
+      `);
 
     res.status(200).json(result.recordset);
   } catch (error) {
